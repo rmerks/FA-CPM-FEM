@@ -20,10 +20,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301 USA
 
 */
-#include <qapplication.h>
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qpainter.h>
+//#include <qapplication.h>
+#include <QWidget>
+#include <QLabel>
+#include <QPainter>
 //#include <q3picture.h>
 #include <QPalette>
 //Added by qt3to4:
@@ -34,9 +34,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <malloc.h>
 #endif
 #include <iostream>
-#include <qtimer.h>
-#include <qpixmap.h>
-#include <qimage.h>
+#include <QTimer>
+#include <QPixmap>
+#include <QImage>
 //#include <q3strlist.h>
 #include <QResizeEvent>
 #include <iostream>
@@ -235,10 +235,10 @@ void QtGraphics::Write(char *fname, int quality) {
 
   
   //std::cerr << "Extension is: " << extension << "\n";
-  if (pixmap->save(imname,extension.toAscii(),quality)) {
-      std::cerr << "Image " << (char *)imname.data() << " was succesfully written.\n"; 
+  if (pixmap->save(imname,extension.toLatin1(),quality)) {
+      std::cerr << "Image " << imname.toStdString() << " was succesfully written.\n";
   } else {
-      std::cerr << "Image " << (char *)imname.data() << " could not be written.\n"; 
+      std::cerr << "Image " << imname.toStdString() << " could not be written.\n";
     QList<QByteArray> fmt = QImageWriter::supportedImageFormats();
     std::cerr << "Please choose one of the following formats: ";
    // for (const char* f = fmt.first(); f; f = fmt.next()) {

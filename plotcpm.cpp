@@ -872,7 +872,7 @@ double minfa = par.BASEFA;
 	{
 	    double radius2 = 0.2*par.PIXPERVOX;
 	    picture->setBrush(Qt::red);
-	    this->picture->drawEllipse(Qp, radius2,radius2);
+	    this->picture->drawEllipse(Qp, (int)radius2,(int)radius2);
 
 	}
 
@@ -1278,7 +1278,7 @@ EndScene();
 }
 
 void PlotCPM::DrawColorBarLabel(int yval, double val){
-//BeginScene();
+BeginScene();
 string valstr;
 ostringstream convert;
 convert.precision(4);
@@ -1293,7 +1293,7 @@ font->setPixelSize(100*par.NVX/300);
 font->setBold(true);
 picture->setFont(*font);
 this->picture->drawText(QPointF(par.NVX*par.PIXPERVOX+2*par.WIDTHCOLORBAR,par.NVY*par.PIXPERVOX-yval), s);
-//EndScene();
+EndScene();
 }
 
 
@@ -1305,81 +1305,76 @@ void PlotCPM::DeleteStrainForce() {
 }
 
 void PlotCPM::PlotStressTensor(NOD *pn, VOX* pv){
-
-
-BeginScene();
-
+    
+    
+    BeginScene();
+    
     // draw FA circles
-    for (int nx=0;nx<par.NVX-1;nx++) { 
+    for (int nx=0;nx<par.NVX-1;nx++) {
         for (int ny=0;ny<par.NVY-1;ny++) {
-
-		int n = nx+ny*par.NVX;
-
+            
+            int n = nx+ny*par.NVX;
+            
             int x1= (par.PIXPERVOX)*nx+par.PIXPERVOX/2;
             int y1= (par.PIXPERVOX)*ny+par.PIXPERVOX/2;
-
-
-    	double estrains[3],L1,L2,v1[2],v2[2];
-	double estress[3]; 
-
-	    QPoint Qp=QPoint(x1,y1);
-      		get_estrains(pn,n,estrains);
-		get_estress(n, estrains,estress);
-
-
-        	L1=L2=.0; get_princs(estress,&L1,&L2,v1,v2,0);
-
-
-		double radius1=5+L1/500;
-		double radius2=5+L2/500;
-
-		if(radius1<0){radius1=0;}
-		if(radius2<0){radius2=0;}
-
-		double angle =0;
-		
-
-		if(L1>=L2){angle = -atan2(v1[1],v1[0])*180/3.14;}
-		if(L2>L1){angle = -atan2(v2[1],v2[0])*180/3.14;}
-
-		
-
-
-
-	    picture->setBrush(Qt::black);
-picture->save();
-picture->translate(Qp);
-picture->rotate(-angle);
-picture->drawEllipse(QPoint(0, 0), radius1,radius2);
-picture->restore();
-
-if(pv[n].ctag)
-{
-double etractionstress[2];
-get_etractionstress(pn,n, etractionstress);
-double strx=etractionstress[0]; double stry=etractionstress[1];
-double tractionstress=sqrt(strx*strx + stry*stry);
-double angle2 = -atan2(stry,strx)*180/3.14;
-picture->setBrush(Qt::red);
-picture->save();
-picture->translate(Qp);
-picture->rotate(-angle2);
-picture->drawEllipse(QPoint(0, 0), 2+tractionstress/500,2);
-picture->restore();
-
-}
-
-
-
-
-
-}
-}
-
-
+            
+            
+            double estrains[3],L1,L2,v1[2],v2[2];
+            double estress[3];
+            
+            QPoint Qp=QPoint(x1,y1);
+            get_estrains(pn,n,estrains);
+            get_estress(n, estrains,estress);
+            
+            
+            L1=L2=.0; get_princs(estress,&L1,&L2,v1,v2,0);
+            
+            
+            double radius1=5+L1/500;
+            double radius2=5+L2/500;
+            
+            if(radius1<0){radius1=0;}
+            if(radius2<0){radius2=0;}
+            
+            double angle =0;
+            
+            
+            if(L1>=L2){angle = -atan2(v1[1],v1[0])*180/3.14;}
+            if(L2>L1){angle = -atan2(v2[1],v2[0])*180/3.14;}
+            
+            
+            
+            
+            
+            picture->setBrush(Qt::black);
+            picture->save();
+            picture->translate(Qp);
+            picture->rotate(-angle);
+            picture->drawEllipse(QPoint(0, 0), (int)radius1,(int)radius2);
+            picture->restore();
+            
+            if(pv[n].ctag)
+            {
+                double etractionstress[2];
+                get_etractionstress(pn,n, etractionstress);
+                double strx=etractionstress[0]; double stry=etractionstress[1];
+                double tractionstress=sqrt(strx*strx + stry*stry);
+                double angle2 = -atan2(stry,strx)*180/3.14;
+                picture->setBrush(Qt::red);
+                picture->save();
+                picture->translate(Qp);
+                picture->rotate(-angle2);
+                picture->drawEllipse(QPoint(0, 0), (int)(2+tractionstress/500),2);
+                picture->restore();
+                
+            }
+        }
+    }
+    
+    
     EndScene();
-
-
+    
+    
 }
 
 
@@ -1388,4 +1383,4 @@ picture->restore();
 
 
 
- 
+
