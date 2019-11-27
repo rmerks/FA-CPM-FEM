@@ -1,0 +1,126 @@
+savefolder = 'path/to/savefolder//TwoCells_J/';
+parnr=4
+load([savefolder,'acute-contact-sqdis',num2str(parnr, '%02i'),'.mat']);
+sqdisanalysis = zeros(size(sqdis1,1),2*size(sqdis1,2),size(sqdis1,3));
+sqdisanalysis(:,1:size(sqdis1,2),:)=sqdis1;
+sqdisanalysis(:,size(sqdis1,2)+1:end,:)=sqdis2;
+
+savefolder = '/path/to/savefolder//SingleCell_Lambda/';
+load([savefolder,'length-area-ecc-sqdis',num2str(parnr, '%02i'),'.mat']);
+
+savefolder = '/path/to/savefolder/';
+
+loopvecsqdis=0:1:5000;
+
+
+for stiffness=1:10
+
+figure(1)
+vals=squeeze(sqdisanalysis(stiffness,:,:));
+s=size(vals);
+subt = 1:100:s(2);
+vals=vals(:,subt);
+mpar=mean(vals,1);
+stdpar=std(vals);
+errorbar(loopvecsqdis(subt),mpar,stdpar,'*blue');
+%boxplot(vals')
+xlim([loopvecsqdis(1) loopvecsqdis(end)])
+xlabel('Time (MCS)');
+ylabel('MSD')
+hold on
+vals=squeeze(sqdis(stiffness,:,:));
+s=size(vals);
+subt = 1:100:s(2);
+vals=vals(:,subt);
+mpar=mean(vals,1);
+stdpar=std(vals);
+errorbar(loopvecsqdis(subt),mpar,stdpar,'*red');
+legend('Individual cells','Cell pairs','Location','NorthWest')
+legend('boxoff')
+ylim([0 500])
+
+saveas(gca,[savefolder,'sqdis_vssinglecell',num2str(stiffness, '%02i'),'.eps'],'epsc')
+saveas(gca,[savefolder,'sqdis_vssinglecell',num2str(stiffness, '%02i'),'.png'],'png')
+
+clf(gcf)
+
+end
+
+parnr=4;
+
+savefolder = '/ufs/rens/CPM_FEM_Project/Results/ForPaperRene/SingleCell_Lambda/';
+load([savefolder,'length-area-ecc-sqdis',num2str(parnr, '%02i'),'.mat']);
+meansqdis=squeeze(mean(sqdis,2));
+tstart=500;
+tstart=find(x==tstart);
+tend=5000;
+tend=find(x==tend);
+dispcoeffs=[];
+confints=[];
+for y = 1:N
+    ft = fittype('poly1');    
+    [fo, gof] = fit((0:tstart)', meansqdis(y,1:tstart+1)',ft);% 'Lower',[0 0],'Upper',[100 100]);
+    ci = confint(fo);
+    dispcoeffs(y,1)=fo.p1/4;
+    confints(y,1:2)=ci(:,1)'/4;
+    
+    [fo, gof] = fit((tstart+1:tend)', meansqdis(y,tstart+1:tend)',ft);%,'Lower',[0 0],'Upper',[100 100]);
+    ci = confint(fo);
+    dispcoeffs(y,2)=fo.p1/4;
+    confints(y,3:4)=ci(:,1)'/4;
+end
+
+savefolder = '/ufs/rens/CPM_FEM_Project/Results/ForPaperRene/TwoCells_J/';
+load([savefolder,'acute-contact-sqdis',num2str(parnr, '%02i'),'.mat']);
+sqdisanalysis = zeros(size(sqdis1,1),2*size(sqdis1,2),size(sqdis1,3));
+sqdisanalysis(:,1:size(sqdis1,2),:)=sqdis1;
+sqdisanalysis(:,size(sqdis1,2)+1:end,:)=sqdis2;
+meansqdis=squeeze(mean(sqdisanalysis,2));
+dispcoeffs2=[];
+confints2=[];
+for y = 1:N
+    ft = fittype('poly1');    
+    [fo, gof] = fit((0:tstart)', meansqdis(y,1:tstart+1)',ft);% 'Lower',[0 0],'Upper',[100 100]);
+    ci = confint(fo);
+    dispcoeffs2(y,1)=fo.p1/4;
+    confints2(y,1:2)=ci(:,1)'/4;
+    
+    [fo, gof] = fit((tstart+1:tend)', meansqdis(y,tstart+1:tend)',ft);%,'Lower',[0 0],'Upper',[100 100]);
+    ci = confint(fo);
+    dispcoeffs2(y,2)=fo.p1/4;
+    confints2(y,3:4)=ci(:,1)'/4;
+end
+
+figure(2)
+mpar=dispcoeffs(:,1);
+L=confints(:,1)-dispcoeffs(:,1);
+U=confints(:,2)-dispcoeffs(:,1);
+errorbar(1:N,mpar,L,U,'*blue');
+xlabel('stiffness (kPa)');
+ylabel('D')
+set(gca,'XTick',1:N)
+xlim([0 N+1])
+set(gca, 'XTickLabel', pars)
+hold on
+mpar=dispcoeffs2(:,1);
+L=confints2(:,1)-dispcoeffs2(:,1);
+U=confints2(:,2)-dispcoeffs2(:,1);
+errorbar(1:N,mpar,L,U,'*red');
+
+figure(3)
+mpar=dispcoeffs(:,2);
+L=confints(:,3)-dispcoeffs(:,2);
+U=confints(:,4)-dispcoeffs(:,2);
+errorbar(1:N,mpar,L,U,'*blue');
+xlabel('stiffness (kPa)');
+ylabel('D')
+set(gca,'XTick',1:N)
+xlim([0 N+1])
+set(gca, 'XTickLabel', pars)
+hold on
+mpar=dispcoeffs2(:,1);
+L=confints2(:,3)-dispcoeffs2(:,2);
+U=confints2(:,4)-dispcoeffs2(:,2);
+errorbar(1:N,mpar,L,U,'*red');
+legend('Individual cells','Cell pairs','Location','NorthWest')
+legend('boxoff')
