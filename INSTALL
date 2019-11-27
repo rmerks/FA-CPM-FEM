@@ -1,0 +1,63 @@
+This code is part of: 
+----------------------
+
+Elisabeth G. Rens and Roeland M.H. Merks. Cell Shape and Durotaxis Follow from Mechanical Cell-Substrate Reciprocity and Focal Adhesion Dynamics: A Multiscale Mathematical Model. PNAS.
+
+Please cite our paper if you use or build upon this code.
+
+Using the code requires basic knowledge of programming, compiling and using the command line. 
+
+INSTALLATION
+------------
+This code is written in C++. The visualization makes use of the Qt5-library. It runs from the commandline and should run on any platform. It has been tested on Linux and MacOSX.
+
+To install, first install a C++ compiler, Qt5 and git. Qt Creator comes with a GNU C++ compiler built in. Download the open source version of Qt. Make sure you check 'command line tools' during installation.
+
+Note that to use the FA-CPM-FEM code, you must make use of the open source version of Qt.  Any derivatives of this simulation code will be open source too.
+
+To start, checkout the source code from GitHub, if you have not already done so:
+
+https://github.com/rmerks/FA-CPM-FEM.git
+
+Next, after downloading the FA-CPM-FEM source code, on the commandline move into the FA-CPM-FEM code (i.e., type 'cd FA-CPM-FEM'). 
+
+Then type:
+
+qmake [enter]
+make [enter]
+
+If the system cannot find 'qmake', please check if qmake is in your path. For example, on our MacOSX system qmake is located in /opt/Qt/5.12.1/clang_64/bin/. Either add the folder to your path, or type the full path to qmake.  
+
+
+USAGE
+-----
+After compilation, there will be an executable called 'CPMFEM' in folder FA-CPM-FEM. The folder "PARAMETERS" contains parameter files for all the individual simulations shown in the paper; the scripts used for the parameter sweeps can be obtained on request from the authors. 
+
+To run a simulation, type './CPMFEM' followed by the name of the folder in which the parameters are residing. It is important that you include a slash (/) after the name of the folder. E.g., 
+
+./CPMFEM PARAMETERS/Fig2A/Fig2A-5kPa/
+
+The output will be stored in the same folder. Output consists of PNG images, and textfiles containing information about the cell shape, focal adhesion sizes, and so forth.
+
+*Anisotropy*
+To run the anistropic simulations shown in the supplements, check out branch 'withnoise' from GitHub, as follows:
+1. Commit any changes that you may have made to the code that you want to keep:
+git commit -am "[description of changes]"
+2. Check out branch "withnoise":
+git checkout withnoise.
+3. Recompile as described above.
+
+
+DATA ANALYSIS
+------------
+To analyse the data from a parameter sweep, we make use of matlab scripts in DataAnalysisinMatlab/
+these matlab scripts make use of the specific functions provided in DataAnalysisinMatlab/functions
+
+Note that when reproduction is necessary, the right folder paths, parameters and ranges should be chosen selected within these files
+
+PROBLEMS
+--------
+If you find any problems, please contact renslisanne@hotmail.com or merksrmh@math.leidenuniv.nl for assistance.
+
+
+
