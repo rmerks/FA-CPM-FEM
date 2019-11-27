@@ -39,4 +39,4 @@ SOURCES += cellforces.cpp \
            warning.cpp \
            write.cpp \
     sandbox.cpp \
-    plotcpm.cpp
+    plotcpm_lisa.cpp
