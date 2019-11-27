@@ -872,7 +872,7 @@ double minfa = par.BASEFA;
 	{
 	    double radius2 = 0.2*par.PIXPERVOX;
 	    picture->setBrush(Qt::red);
-	    this->picture->drawEllipse(Qp, radius2,radius2);
+	    this->picture->drawEllipse(Qp, (int)radius2,(int)radius2);
 
 	}
 
@@ -1349,7 +1349,7 @@ BeginScene();
 picture->save();
 picture->translate(Qp);
 picture->rotate(-angle);
-picture->drawEllipse(QPoint(0, 0), radius1,radius2);
+picture->drawEllipse(QPoint(0, 0), (int)radius1,(int)radius2);
 picture->restore();
 
 if(pv[n].ctag)
@@ -1363,7 +1363,7 @@ picture->setBrush(Qt::red);
 picture->save();
 picture->translate(Qp);
 picture->rotate(-angle2);
-picture->drawEllipse(QPoint(0, 0), 2+tractionstress/500,2);
+picture->drawEllipse(QPoint(0, 0), int(2+tractionstress/500),2);
 picture->restore();
 
 }
