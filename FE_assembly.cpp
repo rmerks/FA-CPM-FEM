@@ -68,6 +68,24 @@ void assembly(int* kcol, double* kval, double** klocal, VOX* pv)
 		if(Ef<1/par.YOUNGS){Ef=1/par.YOUNGS;}
 
 		}
+
+		if(par.YOUNGSNOISE)
+		{
+
+			double r = rand()/(double)RAND_MAX; //between 0 and 1
+
+			r=-1+2*r; //between -1 and 1
+ 			
+			//double r2=rand()/(double)RAND_MAX;
+			//if(r2>=0.5){r =1+(par.YOUNGSNOISE/par.YOUNGS)*r;}
+			//if(r2<0.5){r =1-(par.YOUNGSNOISE/par.YOUNGS)*r;}
+			r =1+(par.YOUNGSNOISE/par.YOUNGS)*r;
+			Ef=Ef*r;
+			if(Ef<0){Ef=0;}
+
+			cout << "par.YOUNGS*Ef " << par.YOUNGS*Ef << endl;
+
+		}
 		// determine corner node numbers of this element
 		n00 = (vx  ) + (vy  )*NNX;
 		n10 = (vx+1) + (vy  )*NNX;

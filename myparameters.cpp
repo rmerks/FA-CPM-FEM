@@ -44,108 +44,109 @@ using namespace std;
 static const std::string _module_id("$Id$");
 
 Parameter::Parameter() {
-  SEED = 1;
-  NVX = 150;
-  NVY = 150;
+  SEED = 0;
+  NVX = 200;
+  NVY = 200;
   MCS = NVX*NVY;
   INSERTMEDIUM = false;
   VOXSIZE = 0.0000025;
-  RELAXTIME = 0;
-  NRINC = 3;
+  NRINC = 2001;
   MAXNRITER = 1000;
-  ACCURACY = 0.00001;
+  RELAXTIME = 0;
+  ACCURACY = 0.000001;
   YOUNGS = 10000;
+  YOUNGSNOISE = 1000;
   POISSON = 0.45;
-  THICKNESS = 0.000001;
-  VISC = 0.1;
+  THICKNESS = 1e-6;
+  VISC = 1e-7;
   GLOBALSTRAIN = false;
-  CYCLIC = false;
-  PERIOD = 5;
+  CYCLIC = true;
+  PERIOD = 10;
   LOADANGLE = 45;
-  LOAD = 200;
-  MOTILITY = 0.1;
-  CLASSICCPM = false;
-  TARGETVOLUME = 600;
-  INELASTICITY = 0.01;
+  LOAD = 4000;
+  MOTILITY = 2;
+  CLASSICCPM = true;
+  TARGETVOLUME = 0;
+  INELASTICITY = 0.0002;
   INELASTICITY2 = 0.01;
   LEMMONROMER = true;
   NODECONNECTION = true;
-  LRTENSION = 0.02;
-  NBHRAD = 1;
+  LRTENSION = 0.001;
+  NBHRAD = 10;
   TWOCELLTYPES = false;
-  NOSTICKJCM = 5000;
+  NOSTICKJCM = 2500;
   NOSTICKJCC = 0;
   NOSTICKJCM2 = 1;
   NOSTICKJCC2 = 1.5;
   NOSTICKJCCb = 1.5;
-  LAMBDAADHESION = 30;
-  MAXAREA = 2000;
-  LAMBDAFA = 0.0000005;
+  LAMBDAADHESION = 600;
+  MAXAREA = 1000;
+  LAMBDAFA = 4;
+  LAMBDAPLAQUE = 1;
   FAH = 20000;
-  LAMBDAPLAQUE = 0.1;
-  CONFSTRESS = 200;
-  FORCEFA = false;
+  CONFSTRESS = 5000;
+  FORCEFA = true;
   LAMBDAFORCEFA = 0;
+  LAMBDAACTIN = 0.1;
   ACTIN = false;
-  LAMBDAACTIN = 0.001;
-  COLLAGEN = 100;
-  COLLAGENSPEED = 100;
-  PDEdt = 1;
-  PDEREPEAT = 1;
-  CAPACITYFA = 1;
-  BASEFA = 0.01;
-  GROWTHFA = 0.01;
+  COLLAGEN = 1;
+  COLLAGENSPEED = 0;
+  PDEdt = 0.01;
+  PDEREPEAT = 1000;
+  CAPACITYFA = 10000000;
+  BASEFA = 5000;
+  GROWTHFA = 0.05;
+  LOGISTICPAR = 1;
   CATCHTENSION = 4.02;
   SLIPTENSION = 7.78;
-  LOGISTICPAR = 1;
   PIXPERVOX = 10;
-  LINEWIDTH = 1;
-  STRIDE = 10;
-  WSTRIDE = 100;
-  COLLAGENFIELD = true;
+  LINEWIDTH = 2;
+  STRIDE = 250;
+  WSTRIDE = 10;
+  COLLAGENFIELD = false;
   STRAINFIELD = false;
-  STRESSFIELD = false;
-  HYDSTRESS = false;
+  STRESSFIELD = true;
+  HYDSTRESS = true;
   STRESSTENSOR = false;
   TRACTIONSTRESSFIELD = false;
   FORCEFIELD = false;
   TENSIONFIELD = false;
-  MAXFORCE = 0;
+  MAXFORCE = 0.005;
   DEFORMFIELD = false;
-  MAXDEFORM = 0;
-  FAFIELD = false;
+  MAXDEFORM = 0.0001;
+  FAFIELD = true;
   FACOLOUR = false;
-  MAXFA = 0;
-  PRINCFIELD = true;
+  MAXFA = 20000;
+  PRINCFIELD = false;
   CELLCOLOUR = true;
-  ONECELL = true;
+  ONECELL = false;
   TWOCELL = false;
-  DISTWOCELLS = 7;
+  DISTWOCELLS = 20;
   CELLCOL = false;
-  READCELLS = false;
-  CELLDENSITY = 0.25;
-  CELLDIS = 15;
-  BOUNDARYDIS = 0;
+  READCELLS = true;
+  CELLDENSITY = 0.001;
+  CELLDIS = 20;
+  BOUNDARYDIS = 25;
   FORBIDDENZONE = 0;
   PATTERN = false;
-  PATTERNC = 10;
+  PATTERNC = 5;
   DUROTAXIS = false;
-  GRADIENT = 0.001;
+  GRADIENT = 100;
   NRcf = 0;
-  COLORBAR = false;
+  COLORBAR = true;
   MAXCOLORBARSTRAIN = 0;
+  MAXCOLORBARDENS = 2000;
   MAXCOLORBARSTRESS = 0;
-  MAXCOLORBARDENS = 100;
   WIDTHCOLORBAR = 0;
   WRATIOPA = false;
-  WLENGTH = false;
-  WAREA = false;
-  WSQDIS = false;
-  WECC = false;
-  WANGLE = false;
-  WSIGMA = false;
+  WLENGTH = true;
+  WAREA = true;
+  WSQDIS = true;
+  WECC = true;
+  WANGLE = true;
+  WSIGMA = true;
   WTOTSHAPE = false;
-  WFA = false;
+  WFA = true;
   WTWOCELLCONTACT = false;
   WTWOCELLANGLECM = false;
 }
@@ -176,108 +177,109 @@ void Parameter::Read(const char *filename) {
   FILE *fp=OpenReadFile(filename);
 
 
-  SEED = igetpar(fp, "SEED", 1, true);
-  NVX = igetpar(fp, "NVX", 150, true);
-  NVY = igetpar(fp, "NVY", 150, true);
+  SEED = igetpar(fp, "SEED", 0, true);
+  NVX = igetpar(fp, "NVX", 200, true);
+  NVY = igetpar(fp, "NVY", 200, true);
   MCS = igetpar(fp, "MCS", NVX*NVY, true);
   INSERTMEDIUM = bgetpar(fp, "INSERTMEDIUM", false, true);
   VOXSIZE = fgetpar(fp, "VOXSIZE", 0.0000025, true);
-  RELAXTIME = igetpar(fp, "RELAXTIME", 0, true);
-  NRINC = igetpar(fp, "NRINC", 3, true);
+  NRINC = igetpar(fp, "NRINC", 2001, true);
   MAXNRITER = igetpar(fp, "MAXNRITER", 1000, true);
-  ACCURACY = fgetpar(fp, "ACCURACY", 0.00001, true);
+  RELAXTIME = igetpar(fp, "RELAXTIME", 0, true);
+  ACCURACY = fgetpar(fp, "ACCURACY", 0.000001, true);
   YOUNGS = fgetpar(fp, "YOUNGS", 10000, true);
+  YOUNGSNOISE = fgetpar(fp, "YOUNGSNOISE", 1000, true);
   POISSON = fgetpar(fp, "POISSON", 0.45, true);
-  THICKNESS = fgetpar(fp, "THICKNESS", 0.000001, true);
-  VISC = fgetpar(fp, "VISC", 0.1, true);
+  THICKNESS = fgetpar(fp, "THICKNESS", 1e-6, true);
+  VISC = fgetpar(fp, "VISC", 1e-7, true);
   GLOBALSTRAIN = bgetpar(fp, "GLOBALSTRAIN", false, true);
-  CYCLIC = bgetpar(fp, "CYCLIC", false, true);
-  PERIOD = igetpar(fp, "PERIOD", 5, true);
+  CYCLIC = bgetpar(fp, "CYCLIC", true, true);
+  PERIOD = igetpar(fp, "PERIOD", 10, true);
   LOADANGLE = fgetpar(fp, "LOADANGLE", 45, true);
-  LOAD = fgetpar(fp, "LOAD", 200, true);
-  MOTILITY = fgetpar(fp, "MOTILITY", 0.1, true);
-  CLASSICCPM = bgetpar(fp, "CLASSICCPM", false, true);
-  TARGETVOLUME = fgetpar(fp, "TARGETVOLUME", 600, true);
-  INELASTICITY = fgetpar(fp, "INELASTICITY", 0.01, true);
+  LOAD = fgetpar(fp, "LOAD", 4000, true);
+  MOTILITY = fgetpar(fp, "MOTILITY", 2, true);
+  CLASSICCPM = bgetpar(fp, "CLASSICCPM", true, true);
+  TARGETVOLUME = fgetpar(fp, "TARGETVOLUME", 0, true);
+  INELASTICITY = fgetpar(fp, "INELASTICITY", 0.0002, true);
   INELASTICITY2 = fgetpar(fp, "INELASTICITY2", 0.01, true);
   LEMMONROMER = bgetpar(fp, "LEMMONROMER", true, true);
   NODECONNECTION = bgetpar(fp, "NODECONNECTION", true, true);
-  LRTENSION = fgetpar(fp, "LRTENSION", 0.02, true);
-  NBHRAD = igetpar(fp, "NBHRAD", 1, true);
+  LRTENSION = fgetpar(fp, "LRTENSION", 0.001, true);
+  NBHRAD = igetpar(fp, "NBHRAD", 10, true);
   TWOCELLTYPES = bgetpar(fp, "TWOCELLTYPES", false, true);
-  NOSTICKJCM = fgetpar(fp, "NOSTICKJCM", 5000, true);
+  NOSTICKJCM = fgetpar(fp, "NOSTICKJCM", 2500, true);
   NOSTICKJCC = fgetpar(fp, "NOSTICKJCC", 0, true);
   NOSTICKJCM2 = fgetpar(fp, "NOSTICKJCM2", 1, true);
   NOSTICKJCC2 = fgetpar(fp, "NOSTICKJCC2", 1.5, true);
   NOSTICKJCCb = fgetpar(fp, "NOSTICKJCCb", 1.5, true);
-  LAMBDAADHESION = fgetpar(fp, "LAMBDAADHESION", 30, true);
-  MAXAREA = fgetpar(fp, "MAXAREA", 2000, true);
-  LAMBDAFA = fgetpar(fp, "LAMBDAFA", 0.0000005, true);
+  LAMBDAADHESION = fgetpar(fp, "LAMBDAADHESION", 600, true);
+  MAXAREA = fgetpar(fp, "MAXAREA", 1000, true);
+  LAMBDAFA = fgetpar(fp, "LAMBDAFA", 4, true);
+  LAMBDAPLAQUE = fgetpar(fp, "LAMBDAPLAQUE", 1, true);
   FAH = fgetpar(fp, "FAH", 20000, true);
-  LAMBDAPLAQUE = fgetpar(fp, "LAMBDAPLAQUE", 0.1, true);
-  CONFSTRESS = fgetpar(fp, "CONFSTRESS", 200, true);
-  FORCEFA = bgetpar(fp, "FORCEFA", false, true);
+  CONFSTRESS = fgetpar(fp, "CONFSTRESS", 5000, true);
+  FORCEFA = bgetpar(fp, "FORCEFA", true, true);
   LAMBDAFORCEFA = fgetpar(fp, "LAMBDAFORCEFA", 0, true);
+  LAMBDAACTIN = fgetpar(fp, "LAMBDAACTIN", 0.1, true);
   ACTIN = bgetpar(fp, "ACTIN", false, true);
-  LAMBDAACTIN = fgetpar(fp, "LAMBDAACTIN", 0.001, true);
-  COLLAGEN = fgetpar(fp, "COLLAGEN", 100, true);
-  COLLAGENSPEED = fgetpar(fp, "COLLAGENSPEED", 100, true);
-  PDEdt = fgetpar(fp, "PDEdt", 1, true);
-  PDEREPEAT = fgetpar(fp, "PDEREPEAT", 1, true);
-  CAPACITYFA = fgetpar(fp, "CAPACITYFA", 1, true);
-  BASEFA = fgetpar(fp, "BASEFA", 0.01, true);
-  GROWTHFA = fgetpar(fp, "GROWTHFA", 0.01, true);
+  COLLAGEN = fgetpar(fp, "COLLAGEN", 1, true);
+  COLLAGENSPEED = fgetpar(fp, "COLLAGENSPEED", 0, true);
+  PDEdt = fgetpar(fp, "PDEdt", 0.01, true);
+  PDEREPEAT = fgetpar(fp, "PDEREPEAT", 1000, true);
+  CAPACITYFA = fgetpar(fp, "CAPACITYFA", 10000000, true);
+  BASEFA = fgetpar(fp, "BASEFA", 5000, true);
+  GROWTHFA = fgetpar(fp, "GROWTHFA", 0.05, true);
+  LOGISTICPAR = fgetpar(fp, "LOGISTICPAR", 1, true);
   CATCHTENSION = fgetpar(fp, "CATCHTENSION", 4.02, true);
   SLIPTENSION = fgetpar(fp, "SLIPTENSION", 7.78, true);
-  LOGISTICPAR = fgetpar(fp, "LOGISTICPAR", 1, true);
   PIXPERVOX = igetpar(fp, "PIXPERVOX", 10, true);
-  LINEWIDTH = igetpar(fp, "LINEWIDTH", 1, true);
-  STRIDE = igetpar(fp, "STRIDE", 10, true);
-  WSTRIDE = igetpar(fp, "WSTRIDE", 100, true);
-  COLLAGENFIELD = bgetpar(fp, "COLLAGENFIELD", true, true);
+  LINEWIDTH = igetpar(fp, "LINEWIDTH", 2, true);
+  STRIDE = igetpar(fp, "STRIDE", 250, true);
+  WSTRIDE = igetpar(fp, "WSTRIDE", 10, true);
+  COLLAGENFIELD = bgetpar(fp, "COLLAGENFIELD", false, true);
   STRAINFIELD = bgetpar(fp, "STRAINFIELD", false, true);
-  STRESSFIELD = bgetpar(fp, "STRESSFIELD", false, true);
-  HYDSTRESS = bgetpar(fp, "HYDSTRESS", false, true);
+  STRESSFIELD = bgetpar(fp, "STRESSFIELD", true, true);
+  HYDSTRESS = bgetpar(fp, "HYDSTRESS", true, true);
   STRESSTENSOR = bgetpar(fp, "STRESSTENSOR", false, true);
   TRACTIONSTRESSFIELD = bgetpar(fp, "TRACTIONSTRESSFIELD", false, true);
   FORCEFIELD = bgetpar(fp, "FORCEFIELD", false, true);
   TENSIONFIELD = bgetpar(fp, "TENSIONFIELD", false, true);
-  MAXFORCE = fgetpar(fp, "MAXFORCE", 0, true);
+  MAXFORCE = fgetpar(fp, "MAXFORCE", 0.005, true);
   DEFORMFIELD = bgetpar(fp, "DEFORMFIELD", false, true);
-  MAXDEFORM = fgetpar(fp, "MAXDEFORM", 0, true);
-  FAFIELD = bgetpar(fp, "FAFIELD", false, true);
+  MAXDEFORM = fgetpar(fp, "MAXDEFORM", 0.0001, true);
+  FAFIELD = bgetpar(fp, "FAFIELD", true, true);
   FACOLOUR = bgetpar(fp, "FACOLOUR", false, true);
-  MAXFA = fgetpar(fp, "MAXFA", 0, true);
-  PRINCFIELD = bgetpar(fp, "PRINCFIELD", true, true);
+  MAXFA = fgetpar(fp, "MAXFA", 20000, true);
+  PRINCFIELD = bgetpar(fp, "PRINCFIELD", false, true);
   CELLCOLOUR = bgetpar(fp, "CELLCOLOUR", true, true);
-  ONECELL = bgetpar(fp, "ONECELL", true, true);
+  ONECELL = bgetpar(fp, "ONECELL", false, true);
   TWOCELL = bgetpar(fp, "TWOCELL", false, true);
-  DISTWOCELLS = igetpar(fp, "DISTWOCELLS", 7, true);
+  DISTWOCELLS = igetpar(fp, "DISTWOCELLS", 20, true);
   CELLCOL = bgetpar(fp, "CELLCOL", false, true);
-  READCELLS = bgetpar(fp, "READCELLS", false, true);
-  CELLDENSITY = fgetpar(fp, "CELLDENSITY", 0.25, true);
-  CELLDIS = igetpar(fp, "CELLDIS", 15, true);
-  BOUNDARYDIS = igetpar(fp, "BOUNDARYDIS", 0, true);
+  READCELLS = bgetpar(fp, "READCELLS", true, true);
+  CELLDENSITY = fgetpar(fp, "CELLDENSITY", 0.001, true);
+  CELLDIS = igetpar(fp, "CELLDIS", 20, true);
+  BOUNDARYDIS = igetpar(fp, "BOUNDARYDIS", 25, true);
   FORBIDDENZONE = igetpar(fp, "FORBIDDENZONE", 0, true);
   PATTERN = bgetpar(fp, "PATTERN", false, true);
-  PATTERNC = igetpar(fp, "PATTERNC", 10, true);
+  PATTERNC = igetpar(fp, "PATTERNC", 5, true);
   DUROTAXIS = bgetpar(fp, "DUROTAXIS", false, true);
-  GRADIENT = fgetpar(fp, "GRADIENT", 0.001, true);
+  GRADIENT = fgetpar(fp, "GRADIENT", 100, true);
   NRcf = igetpar(fp, "NRcf", 0, true);
-  COLORBAR = bgetpar(fp, "COLORBAR", false, true);
+  COLORBAR = bgetpar(fp, "COLORBAR", true, true);
   MAXCOLORBARSTRAIN = fgetpar(fp, "MAXCOLORBARSTRAIN", 0, true);
+  MAXCOLORBARDENS = fgetpar(fp, "MAXCOLORBARDENS", 2000, true);
   MAXCOLORBARSTRESS = fgetpar(fp, "MAXCOLORBARSTRESS", 0, true);
-  MAXCOLORBARDENS = fgetpar(fp, "MAXCOLORBARDENS", 100, true);
   WIDTHCOLORBAR = igetpar(fp, "WIDTHCOLORBAR", 0, true);
   WRATIOPA = bgetpar(fp, "WRATIOPA", false, true);
-  WLENGTH = bgetpar(fp, "WLENGTH", false, true);
-  WAREA = bgetpar(fp, "WAREA", false, true);
-  WSQDIS = bgetpar(fp, "WSQDIS", false, true);
-  WECC = bgetpar(fp, "WECC", false, true);
-  WANGLE = bgetpar(fp, "WANGLE", false, true);
-  WSIGMA = bgetpar(fp, "WSIGMA", false, true);
+  WLENGTH = bgetpar(fp, "WLENGTH", true, true);
+  WAREA = bgetpar(fp, "WAREA", true, true);
+  WSQDIS = bgetpar(fp, "WSQDIS", true, true);
+  WECC = bgetpar(fp, "WECC", true, true);
+  WANGLE = bgetpar(fp, "WANGLE", true, true);
+  WSIGMA = bgetpar(fp, "WSIGMA", true, true);
   WTOTSHAPE = bgetpar(fp, "WTOTSHAPE", false, true);
-  WFA = bgetpar(fp, "WFA", false, true);
+  WFA = bgetpar(fp, "WFA", true, true);
   WTWOCELLCONTACT = bgetpar(fp, "WTWOCELLCONTACT", false, true);
   WTWOCELLANGLECM = bgetpar(fp, "WTWOCELLANGLECM", false, true);
 }
@@ -300,11 +302,12 @@ void Parameter::Write(ostream &os) const {
   os << " MCS = " << MCS << endl;
   os << " INSERTMEDIUM = " << sbool(INSERTMEDIUM) << endl;
   os << " VOXSIZE = " << VOXSIZE << endl;
-  os << " RELAXTIME = " << RELAXTIME << endl;
   os << " NRINC = " << NRINC << endl;
   os << " MAXNRITER = " << MAXNRITER << endl;
+  os << " RELAXTIME = " << RELAXTIME << endl;
   os << " ACCURACY = " << ACCURACY << endl;
   os << " YOUNGS = " << YOUNGS << endl;
+  os << " YOUNGSNOISE = " << YOUNGSNOISE << endl;
   os << " POISSON = " << POISSON << endl;
   os << " THICKNESS = " << THICKNESS << endl;
   os << " VISC = " << VISC << endl;
@@ -331,13 +334,13 @@ void Parameter::Write(ostream &os) const {
   os << " LAMBDAADHESION = " << LAMBDAADHESION << endl;
   os << " MAXAREA = " << MAXAREA << endl;
   os << " LAMBDAFA = " << LAMBDAFA << endl;
-  os << " FAH = " << FAH << endl;
   os << " LAMBDAPLAQUE = " << LAMBDAPLAQUE << endl;
+  os << " FAH = " << FAH << endl;
   os << " CONFSTRESS = " << CONFSTRESS << endl;
   os << " FORCEFA = " << sbool(FORCEFA) << endl;
   os << " LAMBDAFORCEFA = " << LAMBDAFORCEFA << endl;
-  os << " ACTIN = " << sbool(ACTIN) << endl;
   os << " LAMBDAACTIN = " << LAMBDAACTIN << endl;
+  os << " ACTIN = " << sbool(ACTIN) << endl;
   os << " COLLAGEN = " << COLLAGEN << endl;
   os << " COLLAGENSPEED = " << COLLAGENSPEED << endl;
   os << " PDEdt = " << PDEdt << endl;
@@ -345,9 +348,9 @@ void Parameter::Write(ostream &os) const {
   os << " CAPACITYFA = " << CAPACITYFA << endl;
   os << " BASEFA = " << BASEFA << endl;
   os << " GROWTHFA = " << GROWTHFA << endl;
+  os << " LOGISTICPAR = " << LOGISTICPAR << endl;
   os << " CATCHTENSION = " << CATCHTENSION << endl;
   os << " SLIPTENSION = " << SLIPTENSION << endl;
-  os << " LOGISTICPAR = " << LOGISTICPAR << endl;
   os << " PIXPERVOX = " << PIXPERVOX << endl;
   os << " LINEWIDTH = " << LINEWIDTH << endl;
   os << " STRIDE = " << STRIDE << endl;
@@ -384,8 +387,8 @@ void Parameter::Write(ostream &os) const {
   os << " NRcf = " << NRcf << endl;
   os << " COLORBAR = " << sbool(COLORBAR) << endl;
   os << " MAXCOLORBARSTRAIN = " << MAXCOLORBARSTRAIN << endl;
-  os << " MAXCOLORBARSTRESS = " << MAXCOLORBARSTRESS << endl;
   os << " MAXCOLORBARDENS = " << MAXCOLORBARDENS << endl;
+  os << " MAXCOLORBARSTRESS = " << MAXCOLORBARSTRESS << endl;
   os << " WIDTHCOLORBAR = " << WIDTHCOLORBAR << endl;
   os << " WRATIOPA = " << sbool(WRATIOPA) << endl;
   os << " WLENGTH = " << sbool(WLENGTH) << endl;
@@ -446,13 +449,6 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "RELAXTIME" );
-  ostringstream text;
-    text << RELAXTIME;
-xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
-}
-{
-  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "NRINC" );
   ostringstream text;
     text << NRINC;
@@ -467,6 +463,13 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "RELAXTIME" );
+  ostringstream text;
+    text << RELAXTIME;
+xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
+}
+{
+  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "ACCURACY" );
   ostringstream text;
     text << ACCURACY;
@@ -477,6 +480,13 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "YOUNGS" );
   ostringstream text;
     text << YOUNGS;
+xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
+}
+{
+  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "YOUNGSNOISE" );
+  ostringstream text;
+    text << YOUNGSNOISE;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -663,16 +673,16 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "FAH" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LAMBDAPLAQUE" );
   ostringstream text;
-    text << FAH;
+    text << LAMBDAPLAQUE;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LAMBDAPLAQUE" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "FAH" );
   ostringstream text;
-    text << LAMBDAPLAQUE;
+    text << FAH;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -698,16 +708,16 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "ACTIN" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LAMBDAACTIN" );
   ostringstream text;
-text << sbool(ACTIN);
+    text << LAMBDAACTIN;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LAMBDAACTIN" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "ACTIN" );
   ostringstream text;
-    text << LAMBDAACTIN;
+text << sbool(ACTIN);
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -761,6 +771,13 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LOGISTICPAR" );
+  ostringstream text;
+    text << LOGISTICPAR;
+xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
+}
+{
+  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "CATCHTENSION" );
   ostringstream text;
     text << CATCHTENSION;
@@ -771,13 +788,6 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "SLIPTENSION" );
   ostringstream text;
     text << SLIPTENSION;
-xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
-}
-{
-  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "LOGISTICPAR" );
-  ostringstream text;
-    text << LOGISTICPAR;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -1034,16 +1044,16 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "MAXCOLORBARSTRESS" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "MAXCOLORBARDENS" );
   ostringstream text;
-    text << MAXCOLORBARSTRESS;
+    text << MAXCOLORBARDENS;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
   xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
-  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "MAXCOLORBARDENS" );
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "MAXCOLORBARSTRESS" );
   ostringstream text;
-    text << MAXCOLORBARDENS;
+    text << MAXCOLORBARSTRESS;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -1157,10 +1167,6 @@ if (!strcmp(namec, "VOXSIZE")) {
   VOXSIZE = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'VOXSIZE' from XML file.",valc); }
 }
-if (!strcmp(namec, "RELAXTIME")) {
-  RELAXTIME = standardlocale.toInt(valc, &ok);
-  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to integer while reading parameter 'RELAXTIME' from XML file.",valc); }
-}
 if (!strcmp(namec, "NRINC")) {
   NRINC = standardlocale.toInt(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to integer while reading parameter 'NRINC' from XML file.",valc); }
@@ -1169,6 +1175,10 @@ if (!strcmp(namec, "MAXNRITER")) {
   MAXNRITER = standardlocale.toInt(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to integer while reading parameter 'MAXNRITER' from XML file.",valc); }
 }
+if (!strcmp(namec, "RELAXTIME")) {
+  RELAXTIME = standardlocale.toInt(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to integer while reading parameter 'RELAXTIME' from XML file.",valc); }
+}
 if (!strcmp(namec, "ACCURACY")) {
   ACCURACY = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'ACCURACY' from XML file.",valc); }
@@ -1176,6 +1186,10 @@ if (!strcmp(namec, "ACCURACY")) {
 if (!strcmp(namec, "YOUNGS")) {
   YOUNGS = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'YOUNGS' from XML file.",valc); }
+}
+if (!strcmp(namec, "YOUNGSNOISE")) {
+  YOUNGSNOISE = standardlocale.toDouble(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'YOUNGSNOISE' from XML file.",valc); }
 }
 if (!strcmp(namec, "POISSON")) {
   POISSON = standardlocale.toDouble(valc, &ok);
@@ -1275,13 +1289,13 @@ if (!strcmp(namec, "LAMBDAFA")) {
   LAMBDAFA = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LAMBDAFA' from XML file.",valc); }
 }
-if (!strcmp(namec, "FAH")) {
-  FAH = standardlocale.toDouble(valc, &ok);
-  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'FAH' from XML file.",valc); }
-}
 if (!strcmp(namec, "LAMBDAPLAQUE")) {
   LAMBDAPLAQUE = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LAMBDAPLAQUE' from XML file.",valc); }
+}
+if (!strcmp(namec, "FAH")) {
+  FAH = standardlocale.toDouble(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'FAH' from XML file.",valc); }
 }
 if (!strcmp(namec, "CONFSTRESS")) {
   CONFSTRESS = standardlocale.toDouble(valc, &ok);
@@ -1294,12 +1308,12 @@ if (!strcmp(namec, "LAMBDAFORCEFA")) {
   LAMBDAFORCEFA = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LAMBDAFORCEFA' from XML file.",valc); }
 }
-if (!strcmp(namec, "ACTIN")) {
-ACTIN = strtobool(valc);
-}
 if (!strcmp(namec, "LAMBDAACTIN")) {
   LAMBDAACTIN = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LAMBDAACTIN' from XML file.",valc); }
+}
+if (!strcmp(namec, "ACTIN")) {
+ACTIN = strtobool(valc);
 }
 if (!strcmp(namec, "COLLAGEN")) {
   COLLAGEN = standardlocale.toDouble(valc, &ok);
@@ -1329,6 +1343,10 @@ if (!strcmp(namec, "GROWTHFA")) {
   GROWTHFA = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'GROWTHFA' from XML file.",valc); }
 }
+if (!strcmp(namec, "LOGISTICPAR")) {
+  LOGISTICPAR = standardlocale.toDouble(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LOGISTICPAR' from XML file.",valc); }
+}
 if (!strcmp(namec, "CATCHTENSION")) {
   CATCHTENSION = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'CATCHTENSION' from XML file.",valc); }
@@ -1336,10 +1354,6 @@ if (!strcmp(namec, "CATCHTENSION")) {
 if (!strcmp(namec, "SLIPTENSION")) {
   SLIPTENSION = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'SLIPTENSION' from XML file.",valc); }
-}
-if (!strcmp(namec, "LOGISTICPAR")) {
-  LOGISTICPAR = standardlocale.toDouble(valc, &ok);
-  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'LOGISTICPAR' from XML file.",valc); }
 }
 if (!strcmp(namec, "PIXPERVOX")) {
   PIXPERVOX = standardlocale.toInt(valc, &ok);
@@ -1465,13 +1479,13 @@ if (!strcmp(namec, "MAXCOLORBARSTRAIN")) {
   MAXCOLORBARSTRAIN = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'MAXCOLORBARSTRAIN' from XML file.",valc); }
 }
-if (!strcmp(namec, "MAXCOLORBARSTRESS")) {
-  MAXCOLORBARSTRESS = standardlocale.toDouble(valc, &ok);
-  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'MAXCOLORBARSTRESS' from XML file.",valc); }
-}
 if (!strcmp(namec, "MAXCOLORBARDENS")) {
   MAXCOLORBARDENS = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'MAXCOLORBARDENS' from XML file.",valc); }
+}
+if (!strcmp(namec, "MAXCOLORBARSTRESS")) {
+  MAXCOLORBARSTRESS = standardlocale.toDouble(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'MAXCOLORBARSTRESS' from XML file.",valc); }
 }
 if (!strcmp(namec, "WIDTHCOLORBAR")) {
   WIDTHCOLORBAR = standardlocale.toInt(valc, &ok);

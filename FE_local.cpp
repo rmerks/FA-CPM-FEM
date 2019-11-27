@@ -102,6 +102,8 @@ void material_matrix(double *pD)
 	for(n=0; n<3; n++)
 		*(pD + m +3*n) = 0;
 
+
+
 	if(planestress)
 	{
 		Es = (par.YOUNGS)/(1-(par.POISSON)*(par.POISSON));
