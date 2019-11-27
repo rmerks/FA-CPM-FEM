@@ -5,7 +5,7 @@ Elisabeth G. Rens and Roeland M.H. Merks. Cell Shape and Durotaxis Follow from M
 
 Please cite our paper if you use or build upon this code.
 
-Using the code requires basic knowledge of programming, compiling and using the command line. 
+Using the code requires basic knowledge of programming, compiling, usage of git,  and of using the command line. 
 
 INSTALLATION
 ------------
@@ -15,9 +15,9 @@ To install, first install a C++ compiler, Qt5 and git. Qt Creator comes with a G
 
 Note that to use the FA-CPM-FEM code, you must make use of the open source version of Qt.  Any derivatives of this simulation code will be open source too.
 
-To start, checkout the source code from GitHub, if you have not already done so:
+To start, clone the source code from GitHub, if you have not already done so:
 
-https://github.com/rmerks/FA-CPM-FEM.git
+git clone https://github.com/rmerks/FA-CPM-FEM.git
 
 Next, after downloading the FA-CPM-FEM source code, on the commandline move into the FA-CPM-FEM code (i.e., type 'cd FA-CPM-FEM'). 
 
