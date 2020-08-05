@@ -188,8 +188,7 @@ int main(int argc, char *argv[])
 	/// INITIALIZE ///
     if ((par.SEED)) { srand((par.SEED)); 
     }
-    // weggelaten omdat deze niet werkt in Unix systemen
- // else { sranddev(); }
+
 
     mt_init();
     pv = init_voxels();
@@ -358,7 +357,7 @@ int main(int argc, char *argv[])
 	set_forces(pnold,0);
         
 
-	//dont set restrictions if static stress rene
+	//dont set restrictions if static stress 
 	if(!par.GLOBALSTRAIN){set_restrictions(pn);set_restrictions(pnold);set_restrictions(pnstall);}
 	// local K matrix
 	klocal = set_klocal();
@@ -379,10 +378,7 @@ int main(int argc, char *argv[])
 	for(int n=0;n<NDOF;n++){Kms[n]=0;}
 	kval_to_nodes(Kms, kval,pn);
 
-	//NEW: DENSITY OF COLLAGEN 
-	double *dens;
-	dens = new double[NV];
-	for(int v=0;v<NV;v++){dens[v]=par.COLLAGEN;}
+	
 	uold = new double[nrrdof];
 	for(int nn=0;nn<NN;nn++){uold[nn]=0;}
 
@@ -390,10 +386,10 @@ int main(int argc, char *argv[])
 	double *FA;
 	FA = new double[NV];
 	for(int n=0;n<NV;n++){FA[n]=0;} 
-	for(int n=0;n<NV;n++)
-	{
-		//if(pv[n].ctag){FA[n]=par.BASEFA;}
-	}
+	//for(int n=0;n<NV;n++)
+	//{
+	//	if(pv[n].ctag){FA[n]=par.BASEFA;}
+	//}
 
 	double* sumFA2;
 	sumFA2 = new double[NRc];
@@ -409,10 +405,7 @@ int main(int argc, char *argv[])
 			sumFA[pv[n].ctag-1]=sumFA[pv[n].ctag-1]+FA[n];
 		}
 	}
-	double *Act;
-	Act = new double[NV+1];
-	for(int n=0;n<NV;n++){Act[n]=1;} 
-	Act[NV]=20; //maxact
+
 
 	for(int vx=0; vx<par.NVX; vx++) {
         for (int vy=0; vy<par.NVY; vy++) {
@@ -437,15 +430,17 @@ int main(int argc, char *argv[])
 
     	FILE *of=fopen("com.dat","w");
 
+
+
+
 	double *Nt = new double[NRc]; 
 	/// START SIMULATION ///
 	for(incr=startincr; incr<(par.NRINC); incr++)
 	{
 		printf("\nSTART INCREMENT %d",incr);
 
-	set_forces(pn,incr); //set all to zero and stretch (stretch needs to be implemented differently later on to deal with static strain instead of static stress, also because otherwise those are build up as well but they should be constant in time in contrast to cell forces 
+	set_forces(pn,incr); //set all to zero 
 	set_forces(pnstall,incr);
-	//cell_forces_ham(pv, pnstall, NRc, csize, incr, dens,celltypes);
 	if(par.LEMMONROMER){cell_forces(pv, pnstall, csize, NRc,csumx,csumy,FA, pnold);}
 
 
@@ -465,6 +460,8 @@ int main(int argc, char *argv[])
 
 		double dt = par.PDEdt;
 	//FORCE BUILD UP AND FOCAL ADHESION GROWTH
+
+
 	for(int tt=0;tt<par.PDEREPEAT;tt++)
 	{
 
@@ -479,15 +476,17 @@ int main(int argc, char *argv[])
 		int vx3=vx1-1;int vy3=vy1-1;int v3 = vx3 + vy3*(par.NVX);
 		int vx4=vx1-1;int vy4=vy1;int v4 = vx4 + vy4*(par.NVX);
 
-		double nrFA=0;
-		if(FA[v1]>par.BASEFA){nrFA++;}
-		if(FA[v2]>par.BASEFA){nrFA++;}
-		if(FA[v3]>par.BASEFA){nrFA++;}
-		if(FA[v4]>par.BASEFA){nrFA++;}
+		double nrFA=0; 
+		if(vx1>=0 && vx1<par.NVX && vy1>=0 && vy1<par.NVY){if(FA[v1]>par.BASEFA){nrFA++;}}
+		if(vx2>=0 && vx2<par.NVX && vy2>=0 && vy2<par.NVY){if(FA[v2]>par.BASEFA){nrFA++;}}
+		if(vx3>=0 && vx3<par.NVX && vy3>=0 && vy3<par.NVY){if(FA[v3]>par.BASEFA){nrFA++;}}
+		if(vx4>=0 && vx4<par.NVX && vy4>=0 && vy4<par.NVY){if(FA[v4]>par.BASEFA){nrFA++;}}
 		double factor = 1;
 		if(nrFA==0){factor=0;}//if no focal adhesion surrounding the node, then start with no force
 		factor = nrFA/4;
+
 		if(tt==0){pnold[n].fx=pnold[n].fx*factor;pnold[n].fy=pnold[n].fy*factor;}
+
 
 		if(!(pnstall[n].fx==0)&!(pnstall[n].fy==0))//there is a cell here
 		{
@@ -497,35 +496,15 @@ int main(int argc, char *argv[])
 
 
 			double Km=Kms[2*n]; //the x
-			
-			//cout << "n%NNX " << n%NNX << endl;
-			//cout << "Km " << Km << endl;
-			//cout << "v0 " << par.VISC << endl;
-			//cout << "Km*v0 " << Km*par.VISC << endl;
+
 		
 			double forcemag=sqrt(pnstall[n].fx*pnstall[n].fx+pnstall[n].fy*pnstall[n].fy);
 			double tk=forcemag/(par.VISC*Km);
-//cout << "tk " << tk << endl;
-//cout << "dt " << par.PDEdt << endl;
-//cout << "forcemag " << forcemag << endl;
-//cout << "forcemag*par.THICKNESS " << forcemag*par.THICKNESS << endl;
-//cout << "par.THICKNESS " << par.THICKNESS << endl;
-//cout << "Km " << Km << endl;
-//cout << "Km*par.VISC " << Km*par.VISC << endl;
-			//cout << "tk " << tk << endl;
+
 			pn[n].fx=pnstall[n].fx+(pnold[n].fx-pnstall[n].fx)*exp(-dt*tt/tk);
 			pn[n].fy=pnstall[n].fy+(pnold[n].fy-pnstall[n].fy)*exp(-dt*tt/tk);
 			if(tt==par.PDEREPEAT-1){pnold[n].fx=pn[n].fx;pnold[n].fy=pn[n].fy;}
-			if(forcemag>0&tt==par.PDEREPEAT-2)
-			{
-			//cout << "forcemag " << forcemag << endl;
-			//cout << "n " << n << endl;
-			//cout << "Km " << Km << endl;
-			//cout << "tk " << tk << endl;
-			//cout << "pnold[n].fx " << pnold[n].fx << endl;
-			//cout << "pnstall[n].fx " << pnstall[n].fx << endl;
-			//cout << "pn[n].fx " << pn[n].fx << endl;
-			}
+			
 			}
 		}
 		for(int c=0;c<NRc;c++){Nt[c]=par.CAPACITYFA-sumFA[c];}//20
@@ -541,66 +520,28 @@ int main(int argc, char *argv[])
 				double strx=etractionstress[0]; double stry=etractionstress[1];
 				tension=sqrt(strx*strx + stry*stry)*par.VOXSIZE*par.VOXSIZE;
 				double g =0;
-				if(!par.PATTERN){g=par.GROWTHFA;}
-				if(par.PATTERN)
-				{
-					int nx=n%par.NVX;
-					int ny=n/par.NVX;
-					if((nx%par.PATTERNC==1) && (ny%par.PATTERNC==1)){g = par.GROWTHFA;}
-				} 
+				g=par.GROWTHFA;
+				
 				double sliptension = par.SLIPTENSION;  
 				double catchtension = par.CATCHTENSION;
-				double tension2 = tension*1e12; //because pN
+				double tension2 = tension*1e12; //because picoNewton
+
 				double rate = exp((tension2/FA[n]-sliptension))+exp(-(tension2/FA[n]-catchtension));
+				rate=rate*par.DECAYFA;
+
 				double Na = Nt[cellnr-1]; if(Na<0){Na=0;}
-				//if(Na+FA[n]>10000){Na=10000-FA[n];}
 
-				double maxfa = 50*par.VOXSIZE*par.VOXSIZE/8e-15;
+				double maxfa = par.MAXFAPP;
+
 				double s=FA[n]-dt*rate*FA[n]+dt*g*Na*(1-par.LOGISTICPAR*FA[n]/maxfa); //logistic growth 
-				if(FA[n]>=maxfa){s=FA[n]-dt*rate*FA[n];} //try
+
+
+				if(FA[n]>=maxfa){s=FA[n]-dt*rate*FA[n];} 
 				if(s<0){s=0;}
-				//try
-				if(FA[n]==0){s=0;} //want rate is infinite
+				
+				if(FA[n]==0){s=0;} //rate is infinite
 				double diff = FA[n]-s;
-				//if(tt==par.PDEREPEAT-1 | tt ==0)
-				//{
-				//if(n==21899){
-				//cout << "n " << n << endl;
-
-				//cout << "tt " << tt << endl;
-				//cout << "tension2 " << tension2 << endl;
-				//cout << "tension2/FA[n] " << tension2/FA[n] << endl;
-
-				//cout << "rate " << rate << endl;
-				//cout << "rate*FA[n] " << rate*FA[n] << endl;
-				//cout << "grate " << g*Na*(1-par.LOGISTICPAR*FA[n]/maxfa) << endl;
-				//cout << "FA[n] " << FA[n] << endl;
-				//cout << "s " << s << endl;
-				
-				//}
-				//cout << endl;
-				//}
-
-				/*if(n==18504-1*10| n ==18504+9*200+5*200 | n==18504 |n ==18504+9*200+5*200-10 )
-				{
-				double estrains[3];
-				double estress[3];
-				get_estrains(pn,n,estrains);
-				get_estress(n, estrains,estress);
-				double hstr = (estress[0]+estress[1])/2;
-				cout << "n " << n << endl;
-				cout << "fx " << strx << endl;
-				cout << "fy " << stry << endl;
-				//cout << "tt " << tt << endl;
-				//cout << "tension2 " << tension2 << endl;
-				//cout << "rate " << rate << endl;
-				//cout << "FA[n] " << FA[n] << endl;
-				//cout << "s " << s << endl;
-				//cout << "hstr " << hstr << endl;
-				//cout << endl;
-				}
-				*/
-				
+			
 				FA[n]=s;
 
 				sumFA[cellnr-1]=sumFA[cellnr-1]-diff;
@@ -658,6 +599,7 @@ int main(int argc, char *argv[])
 	//calctension(pn,klocal);
         if (!(incr%(par.STRIDE))) {
     PlotCPM plot((par.NVX)*(par.PIXPERVOX)+3*par.WIDTHCOLORBAR,par.NVY*(par.PIXPERVOX));
+
              char fname[200];
              sprintf(fname,fcstr,incr);
 
@@ -669,9 +611,13 @@ int main(int argc, char *argv[])
 
 
 
-	        plot.PlotHueStressField(par.STRESSFIELD);
+	        if(!par.TESTNEWFAPLOT){plot.PlotHueStressField(par.STRESSFIELD);}
+	        if(par.TESTNEWFAPLOT){
+plot.PlotHueStressField_CTB(par.STRESSFIELD);
+// plot.PlotHueStressField(par.STRESSFIELD);
+}
 	        //plot.PlotHueStrainField(par.STRAINFIELD);
-		if(par.COLLAGENFIELD){plot.PlotHueChemField(dens);}
+
 
                 if(par.PRINCFIELD){ 		
 	     	plot.PlotPrincipleStressField(pv);}
@@ -680,7 +626,14 @@ int main(int argc, char *argv[])
 
 		
 
-		if(par.FAFIELD){plot.PlotNodalFA(pn,FA);}
+		if(par.FAFIELD)
+		{
+
+		if(par.TESTNEWFAPLOT==false) {plot.PlotNodalFA(pn,FA);}
+		else
+			plot.PlotNodalFA2(pv,FA);
+		}
+
 		if(par.STRESSTENSOR){plot.PlotStressTensor(pn,pv);}
 		if(par.DEFORMFIELD){plot.PlotNodalDeform(pn);}
 
@@ -688,19 +641,17 @@ int main(int argc, char *argv[])
 
 		if(par.FORCEFIELD){
 		plot.CalculateForceField(pn); 
-		plot.PlotNodalForces(pn);}
+		plot.PlotNodalForces(pn,pv);}
 
-		if(par.TENSIONFIELD){
-		plot.CalculateTensionField(pn);
-		plot.PlotNodalTension(pn);plot.PlotNodalTension2(pn);
-		}
-
-
-		
+	
 		if(par.COLORBAR){
 		if(par.STRAINFIELD){plot.StrainColorBar();}
-		if(par.STRESSFIELD){plot.StressColorBar();}
-		if(par.COLLAGENFIELD){plot.ChemColorBar(dens);}}
+		if(par.STRESSFIELD && !par.TESTNEWFAPLOT){plot.StressColorBar();}
+		if(par.STRESSFIELD && par.TESTNEWFAPLOT){
+plot.StressColorBar_CTB();
+//plot.StressColorBar();
+}
+		}
 
 
 		cout << fname << endl;
@@ -708,6 +659,7 @@ int main(int argc, char *argv[])
                 plot.Write(fname);
 
 		plot.DeleteStrainForce();
+
 
 
            
@@ -813,9 +765,9 @@ int main(int argc, char *argv[])
 		//cout << "move1 " << endl;
 		//now = time(0);
 		//cout << now << endl;
-				CPM_moves(pv,pn,csize, csumx, csumy, incr,dens,FA,NRc,celltypes,sumFA,Act,pnold);
+				CPM_moves(pv,pn,csize, csumx, csumy, incr,FA,NRc,celltypes,sumFA,pnold);
 
-	for(int n=0;n<NV;n++){Act[n]=Act[n]-1;if(Act[n]<1){Act[n]=0;}} //maxact does not decrease
+
 		//cout << "move2 " << endl;
 		//now = time(0);
 		//cout << now << endl;
@@ -846,10 +798,10 @@ int main(int argc, char *argv[])
 
 			if(pv[n].ctag)
 			{
-				if(FA[n]<par.BASEFA) //1 test ipv <par.BASEFA
+				if(FA[n]<par.BASEFA) 
 				{
 						sumFA[pv[n].ctag-1]=sumFA[pv[n].ctag-1]-FA[n];
-						//tensionold[n]=0;
+
 						
 						if(sumFA[pv[n].ctag-1]+par.BASEFA<=par.CAPACITYFA)
 						{
@@ -869,6 +821,8 @@ int main(int argc, char *argv[])
 
 		
 	}
+
+
 
 	for(int vx=0; vx<par.NVX; vx++) {
         for (int vy=0; vy<par.NVY; vy++) {
@@ -906,8 +860,7 @@ int main(int argc, char *argv[])
 	if(par.WSQDIS){delete [] sqdis;}
 	if(par.WANGLE){delete [] cangle;}
 	if(par.WECC){delete [] ecc;}
-	delete [] dens;
-	delete [] pnold; delete [] uold; delete [] FA; delete [] Act; delete [] pnstall;
+	delete [] pnold; delete [] uold; delete [] FA; delete [] pnstall;
 	delete [] totshape; delete [] sumFA; delete [] sumFA2; //delete [] tensionold;
 	delete [] Kms;
 	delete [] celltypes;

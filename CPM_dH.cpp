@@ -2,7 +2,7 @@
 #include "functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, int stag, int incr, double* dens, bool matrix,int NRc,int* celltypes)
+double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, int stag, int incr,  bool matrix,int NRc,int* celltypes)
 {
 
 
@@ -16,7 +16,7 @@ double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, 
 
 			dHcontact = calcdHcontact(pv,xt,ttag,stag,celltypes);
 			dHvol = calcdHvol(csize,ttag,stag,celltypes);
-			dHadh = calcdHadh(pn,xt,xs,pick,ttag,stag,dens,csize,pv); 
+			dHadh = calcdHadh(pn,xt,xs,pick,ttag,stag,csize,pv); 
 
 			//let cells grow first
 			if(incr<par.RELAXTIME)
@@ -31,10 +31,7 @@ double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, 
 
 				dH=+dHvolnews-dHvololds+dHvolnewt-dHvololdt;
 				dH=dH/80;
-//cout << "dHcontact " << dHcontact << endl;
-//cout << "dH " << dH << endl;
 
-			//dH+=dHcontact;
 
 			}
 			
@@ -48,21 +45,13 @@ double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, 
 			}
 
 
-	//cout << "stag " << stag << endl;
-	//cout << "ttag " << ttag << endl;
+
 	if(ttag)
 	{
 	if(pick==8)
 	{
 
 	dH=0; //TEST
-
-
-	//cout << "middlecell " << endl;	cout << "dHcontact " << dHcontact << endl;
-	//cout << "dHvol " << dHvol << endl;
-	//cout << "dHadh " << dHadh << endl;
-	//cout << "dH " << dH << endl;
-
 
 	}
 
@@ -72,26 +61,10 @@ double calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, 
 	get_estress(xt, estrains,estress);
 	double hstr = (estress[0]+estress[1])/2;
 	if(hstr<0){hstr=0;}
-	if(hstr>0)
-	{
-	//cout << endl;
-	//cout << "dHcontact " << dHcontact << endl;
-	//cout << "dHvol " << dHvol << endl;
-	//cout << "dHadh " << dHadh << endl;
-	//cout << "dH " << dH << endl;
 
 	}
-	}
-	if(stag)
-	{
-	//cout << endl;
-	//cout << "extension " << endl;
-	//cout << "dHcontact " << dHcontact << endl;
-	//cout << "dHvol " << dHvol << endl;
-	//cout << "dHadh " << dHadh << endl;
-	//cout << "dH " << dH << endl;
-	}
-	//cout << endl;
+
+
 		}
 
 
@@ -318,6 +291,7 @@ double dHvol=0;
 			V=csize[stag-1]; eV=(V-V0); eVn=(V+1-V0);
 			dHvolB = (par.INELASTICITY)*(eVn*eVn-eV*eV);
 
+
 		}
 		dHvol = dHvolA+dHvolB;
 
@@ -329,12 +303,12 @@ double dHvol=0;
 }
 
 
-double calcdHadh(NOD* pn, int xt, int xs, int pick, int ttag, int stag, double *dens, int* csize, VOX* pv)
+double calcdHadh(NOD* pn, int xt, int xs, int pick, int ttag, int stag,int* csize, VOX* pv)
 {
 double dHadh=0;
 	//double Aref=2000;//200
 	double Aref=par.MAXAREA;
-	//nog niet dens gebruiken
+
 	double dHadh1 =0;
 	double adh1=0;
 	double adh1new=0;
@@ -345,6 +319,8 @@ double dHadh=0;
 	{
 		adh1=csize[stag-1];
 		adh1new=csize[stag-1]+1;
+
+
 	}
 	if(ttag)
 	{
@@ -354,7 +330,6 @@ double dHadh=0;
 	dHadh1=par.LAMBDAADHESION*adh1/(Aref+adh1)-par.LAMBDAADHESION*adh1new/(Aref+adh1new);
 	dHadh2=par.LAMBDAADHESION*adh2/(Aref+adh2)-par.LAMBDAADHESION*adh2new/(Aref+adh2new);
 	dHadh = dHadh1+dHadh2;
-
 
 
 	return dHadh;

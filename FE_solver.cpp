@@ -27,6 +27,9 @@ void solvePCG(int* kcol, double* kval, double* u, double* f, int nrrdof)
 	double rhoi, rhoinew, initrho;
 	double beti, alfi, pq;
 
+//for(int k=0;k<nrrdof;k++){
+//if(f[k]>0){cout << "f[k] " << f[k] << endl;}}
+
 	//double rhoreal = 1E6;
 	//initrho = 1E6;
 

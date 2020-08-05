@@ -15,6 +15,7 @@ public:
     void PlotHueStrainField(bool STRAINFIELD);
     void PlotHueChemField(double *chem);
     void PlotHueStressField(bool STRESSFIELD);
+    void PlotHueStressField_CTB(bool STRESSFIELD);
     void PlotPrincipleStrainField(VOX *pv);
     double MaxStrainMagnitude(void) const;
     double MaxForceMagnitude(void) const;
@@ -23,18 +24,19 @@ public:
     double MaxStressMagnitude(void) const;
     void CalculateStrainField(NOD *pn) const;
     void CalculateForceField(NOD *pn) const;
-    void CalculateTensionField(NOD *pn) const;
     void CalculateStressField(NOD *pn) const;
-    void PlotNodalForces(NOD *pn);
+    void PlotNodalForces(NOD *pn,VOX* pv);
     void PlotNodalTension(NOD *pn);
     void PlotNodalTension2(NOD *pn);
     void PlotNodalDeform(NOD *pn);
     void PlotNodalFA(NOD *pn, double *FA);
+    void PlotNodalFA2(VOX *pv, double *FA);
     void PlotStressTensor(NOD *pn,VOX* pv);
     void PlotNodeConnection(NOD *pn, int *pathx, int *pathy);
     void StrainColorBar(void);
     void ChemColorBar(double *chem);
     void StressColorBar(void);
+    void StressColorBar_CTB(void);
     void DrawColorBarLabel(int yval, double val);
     void DeleteStrainForce();
 signals:

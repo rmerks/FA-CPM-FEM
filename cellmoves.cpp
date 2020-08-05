@@ -2,7 +2,7 @@
 #include "functions.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, double *dens,double *FA,int NRc,int* celltypes,double* sumFA,double* Act,NOD* pnold)
+void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr,double *FA,int NRc,int* celltypes,double* sumFA,NOD* pnold)
 // cellular potts model: one Monte Carlo step
 {
 	int i,NRsteps = NV;
@@ -19,7 +19,7 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 
 	for(i=0;i<NRsteps;i++)
 	{
-		//xt = (rand()*NV/RAND_MAX); // pick random element
+
 		xt = mt_random()%NV; // pick random element
 		xty = xt/(par.NVX); xtx = xt%(par.NVX);
 
@@ -37,27 +37,7 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 
 			int middlecell=0;
 
-			if(par.INSERTMEDIUM)
-			{
-				pick = mt_random()%8;
-				//check if in middle of cell
-				int middlecell=0;
-				int allcell=0;
-				for(int pi=0;pi<8;pi++){if(pv[nbs[pi]].ctag>0){allcell++;}}
-				for(int pi=0;pi<8;pi++){if(pv[nbs[pi]].ctag==ttag){middlecell++;}}
-				if(middlecell<8 & allcell==8){pick=mt_random()%9;}
-
-				bool testincell=TRUE;
-				if(testincell)
-				{
-					if(middlecell==8)
-					{
-						pick=mt_random()%9;
-					}
-
-				}
-			}
-			if(!par.INSERTMEDIUM){pick = mt_random()%8;}
+			pick = mt_random()%8;
 
 
 
@@ -75,8 +55,7 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 
 
 			go_on = 0; 
-				//if(ttag==stag & ttag>0){go_on=1;} //TEST
-
+				
 			if(ttag!=stag) //don't bother if no difference
 			{
 				go_on = 1; 
@@ -109,17 +88,10 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 
 
 
-				dH = calcdH(pv,pn,csize,xt,xs,pick,ttag,stag,incr,dens,FALSE,NRc,celltypes);
+				dH = calcdH(pv,pn,csize,xt,xs,pick,ttag,stag,incr,FALSE,NRc,celltypes);
 
 
-				//if(stag>0)
-				//{
-					//double dHdiss=0;
-					//if(csize[stag-1]>3000){dHdiss=100000000000000000;}
-					//dH+=dHdiss;
-					//if(dHdiss>0){cout << "dHdiss " << dHdiss << endl;}
 
-				//}
 				if(ttag>0 & FA[xt]>0)//
 				{
 
@@ -133,70 +105,25 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 					double dHdiss=par.INELASTICITY/2;
 					dHdiss = 0;
 
-					if(FA[xt]>par.BASEFA) //zodat focal adhesion is gedefinieerd als hij groter is dan start
+					if(FA[xt]>par.BASEFA) 
 					{
 					double maxfa = 50*par.VOXSIZE*par.VOXSIZE/8e-15; 
-					//cout << "maxfa " << maxfa << endl;
-					//dHdiss = par.LAMBDAFA*(FA[xt]-par.BASEFA);
+
 					double p = par.LAMBDAPLAQUE;
 					double k = par.CONFSTRESS;
 					dHdiss = par.LAMBDAFA*FA[xt]*(1+p*hstr/(k+hstr)); 
 					dHdiss = par.LAMBDAFA*(FA[xt]-par.BASEFA)*(1+p*hstr/(k+hstr)); 
 					dHdiss = par.LAMBDAFA*(FA[xt]-par.BASEFA)/(par.FAH-par.BASEFA+FA[xt]-par.BASEFA)*(1+p*hstr/(k+hstr)); 
 
-					//because otherwise cell breaks down if classic cpm
-					//dHdiss=par.LAMBDAFA*(FA[xt]-5000)/(5000+(FA[xt]-5000));
-
-					//dHdiss = par.LAMBDAFA/(1+exp(-0.0002*(FA[xt]-15000))); //0.0002 10000
-					//cout << "dHb " << dH << endl;
+					
 					dH+=dHdiss;
-					if(hstr>0 | pick==8)
-					{
-					//cout << "xt " << xt << endl;
- 					//cout << "estress[0] " << estress[0] << endl;
- 					//cout << "estress[1] " << estress[1] << endl;
 
-					//cout << "hstr " << hstr << endl;
-					//cout << "p*hstr/(k+hstr) " << p*hstr/(k+hstr) << endl;
-					//cout << "FA[xt] " << FA[xt] << endl;
-					//cout << "dHdiss " << dHdiss << endl;
-					//cout << "dHa " << dH << endl;
-					}
 					}
 
 
 	
 				}
-				if(par.ACTIN)//niculescu // & stag>0
-				{
-
-					double dHdiss=0;
-					double gm=1;
-					int root =0;
-
-					nbs[0]=xt-1+(par.NVX); nbs[1]=xt+(par.NVX); nbs[2]=xt+1+(par.NVX);
-					nbs[7]=xt-1;                    nbs[3]=xt+1;
-					nbs[6]=xt-1-(par.NVX); nbs[5]=xt-(par.NVX); nbs[4]=xt+1-(par.NVX);
-
-					for(int n=0;n<8;n++)
-					{
-						int v = nbs[n];
-						if(pv[v].ctag==pv[xs].ctag & Act[v]>0){gm=gm*Act[v];root++;}
-									
-					}
-							
-					
-					if(!(root==0)){dHdiss=pow(gm,1.0/root)*par.LAMBDAACTIN/Act[NV];} //maxact
-					//cout << endl;
-					//cout << "dH " << dH << endl;
-					if(!(root==0)){
-					//cout << "Act " << pow(gm,1.0/root) << endl;
-					//cout << "dHdiss " << -dHdiss << endl;
-					}
-					if(stag){dH=dH-dHdiss;}
-					if(ttag){dH=dH+dHdiss;}
-
-				}
+				
 
 
 				prob = exp(-(dH)/(par.MOTILITY));
@@ -220,23 +147,21 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 					
 				   	}}
 
-//cout << "pick " << pick << endl;
-					//pv[xt].ctag = stag; // a move is made
+
+
 					if(pick<8){pv[xt].ctag = stag;} // a move is made
 					if(ttag)
 					{	
-						//cout << "FA[xt] " << FA[xt] << endl;
-						//if(incr>0){sumFA[ttag-1]=sumFA[ttag-1]-FA[xt];} //checken
+
+
 						sumFA[ttag-1]=sumFA[ttag-1]-FA[xt];
 						FA[xt]=0; 
-						Act[xt]=0; 
-						//tensionold[xt]=0;
-						//cout << "sumFA retraction " << sumFA[ttag-1] << endl;
+
 
 					}
 					if(stag)
 					{
-						Act[xt]=Act[NV]; //maxact
+
 						if(sumFA[stag-1]+par.BASEFA<=par.CAPACITYFA)
 						{
 							FA[xt]=par.BASEFA;
@@ -247,9 +172,7 @@ void CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, d
 							FA[xt]=par.CAPACITYFA-sumFA[stag-1];
 							sumFA[stag-1]=sumFA[stag-1]+FA[xt];
 						}
-						//tensionold[xt]=0;
-						//cout << "FA[xt] " << FA[xt] << endl;
-						//cout << "sumFA extension " << sumFA[stag-1] << endl;
+					
 
 					}
 
@@ -289,7 +212,7 @@ BOOL splitcheckCCR(VOX* pv, int* csize, int xt, int ttag)
 	split = FALSE;
 	if(in>1)
 	{
-		// CONNECTED COMPONENT ALGORITHM Rene-style (CCR)
+	// CONNECTED COMPONENT ALGORITHM Rene(van Oers)-style (CCR)
     	// connected checking "label":
     	// 0: blue;    neighbors of retracted element
     	// 1: white;   undiscovered
