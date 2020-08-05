@@ -59,13 +59,23 @@ void assembly(int* kcol, double* kval, double** klocal, VOX* pv)
 	for(vy=0; vy<par.NVY; vy++)
    	for(vx=0; vx<(par.NVX); vx++)
 	{
-		Ef = 1;//(vx+1)/(double)(par.NVX)+.5;
+		Ef = 1;
 		if(par.DUROTAXIS)
 		{
-		//Ef = par.YOUNGS*(1+par.GRADIENT*double(n%par.NVX)/par.YOUNGS);
-		//if(Ef<1000/par.YOUNGS){Ef=1000/par.YOUNGS;}
+
+
 		Ef=(1+par.GRADIENT*(vx-100)/par.YOUNGS);
 		if(Ef<1/par.YOUNGS){Ef=1/par.YOUNGS;}
+
+		}
+
+
+
+		if(par.TESTLOCALSINE)
+		{
+
+			Ef=Ef*(1+par.SINEAMP*cos((vx-par.NVX/2)*2*M_PI/par.SINEPER)*cos((vy-par.NVY/2)*2*M_PI/par.SINEPER)/par.YOUNGS);
+			if(Ef<1/par.YOUNGS){Ef=1/par.YOUNGS;}
 
 		}
 
@@ -75,15 +85,12 @@ void assembly(int* kcol, double* kval, double** klocal, VOX* pv)
 			double r = rand()/(double)RAND_MAX; //between 0 and 1
 
 			r=-1+2*r; //between -1 and 1
- 			
-			//double r2=rand()/(double)RAND_MAX;
-			//if(r2>=0.5){r =1+(par.YOUNGSNOISE/par.YOUNGS)*r;}
-			//if(r2<0.5){r =1-(par.YOUNGSNOISE/par.YOUNGS)*r;}
+
 			r =1+(par.YOUNGSNOISE/par.YOUNGS)*r;
 			Ef=Ef*r;
 			if(Ef<0){Ef=0;}
 
-			cout << "par.YOUNGS*Ef " << par.YOUNGS*Ef << endl;
+
 
 		}
 		// determine corner node numbers of this element

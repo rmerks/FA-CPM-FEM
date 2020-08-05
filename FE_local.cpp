@@ -102,8 +102,6 @@ void material_matrix(double *pD)
 	for(n=0; n<3; n++)
 		*(pD + m +3*n) = 0;
 
-
-
 	if(planestress)
 	{
 		Es = (par.YOUNGS)/(1-(par.POISSON)*(par.POISSON));
@@ -339,68 +337,9 @@ void get_etractionstress(NOD* pn,int e, double* etractionstress)
 {
 
 
-	/*int ex=e%par.NVX;			
-	int ey=e/par.NVY;	
-	if(ex<par.NVX-1 & ex>0 & ey<par.NVY-1 & ey >0){		//voor nu even om te testen ivm boundary
-	double tx,ty;
-	double s1[3],s2[3],s3[3],s4[3];
-	double str1[3],str2[3],str3[3],str4[3];
-
-	get_estrains(pn,ex+1+ey*par.NVX,str1);
-	get_estress(ex+1+ey*par.NVX,str1,s1);
-
-	get_estrains(pn,ex-1+ey*par.NVX,str2);
-	get_estress(ex-1+ey*par.NVX,str2,s2);
-
-	get_estrains(pn,ex+(ey+1)*par.NVX,str3);
-	get_estress(ex+(ey+1)*par.NVX,str3,s3);
-
-	get_estrains(pn,ex+(ey-1)*par.NVX,str4);
-	get_estress(ex+(ey-1)*par.NVX,str4,s4);
-
-	double tx1,tx2,ty1,ty2;
-	tx1=par.THICKNESS*(s1[0]-s2[0])/(2*par.VOXSIZE);
-	tx2=par.THICKNESS*(s3[2]-s4[2])/(2*par.VOXSIZE);
-	ty1=par.THICKNESS*(s1[2]-s2[2])/(2*par.VOXSIZE);
-	ty2=par.THICKNESS*(s3[1]-s4[1])/(2*par.VOXSIZE);
-
-	tx = -(tx1+tx2);
-	ty = -(ty1+ty2);
-	
-
-	//cout << "tx1 " << tx1 << endl;
-	//cout << "tx2 " << tx2 << endl;
-	//cout << "tx " << tx << endl;
-	//cout << "ty1 " << ty1 << endl;
-	//cout << "ty2 " << ty2 << endl;
-	//cout << "ty " << ty << endl;
-
-	//etractionstress[0]=tx;
-	//etractionstress[1]=ty;
-
-	etractionstress[0]=tx;
-	etractionstress[1]=ty;
-	*/
-	/*if(signbit(tx1)==signbit(tx))
-	{
-		etractionstress[0]+=tx1;
-	}
-	if(signbit(tx2)==signbit(tx))
-	{
-		etractionstress[0]+=tx2;
-	}
-	if(signbit(ty1)==signbit(ty))
-	{
-		etractionstress[1]+=ty1;
-	}
-	if(signbit(ty2)==signbit(ty))
-	{
-		etractionstress[1]+=ty2;
-	}
-	*/
 	int ex=e%par.NVX;			
 	int ey=e/par.NVX;
-	if(ex<par.NVX-1 & ex>0 & ey<par.NVY-1 & ey >0){		//voor nu even om te testen ivm boundary
+	if(ex<par.NVX-1 & ex>0 & ey<par.NVY-1 & ey >0){		
 
 	//four surrounding nodes of pixel
 	int n00 = (ex  ) + (ey  )*NNX;
@@ -409,8 +348,8 @@ void get_etractionstress(NOD* pn,int e, double* etractionstress)
 	int n01 = (ex  ) + (ey+1)*NNX;
 	etractionstress[0]=(pn[n00].fx+pn[n10].fx+pn[n11].fx+pn[n01].fx)/4;
 	etractionstress[1]=(pn[n00].fy+pn[n10].fy+pn[n11].fy+pn[n01].fy)/4;
-	etractionstress[0]=par.THICKNESS*etractionstress[0]/(par.VOXSIZE*par.VOXSIZE);
-	etractionstress[1]=par.THICKNESS*etractionstress[1]/(par.VOXSIZE*par.VOXSIZE);
+	etractionstress[0]=par.FORCESCALE*par.THICKNESS*etractionstress[0]/(par.VOXSIZE*par.VOXSIZE);
+	etractionstress[1]=par.FORCESCALE*par.THICKNESS*etractionstress[1]/(par.VOXSIZE*par.VOXSIZE);
 	
 
 	}

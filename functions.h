@@ -22,7 +22,7 @@ void 		set_forces(NOD* pn,int incr);
 void		set_restrictions(NOD* pn);
 
 // cellmoves.c
-void 		CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, double *dens, double *FA, int NRc,int* celltypes,double* sumFA,double* Act,NOD* pnold);
+void 		CPM_moves(VOX* pv, NOD* pn, int* csize, int *csumx, int *csumy, int incr, double *FA, int NRc,int* celltypes,double* sumFA,NOD* pnold);
 BOOL 		splitcheckCCR(VOX* pv,  int* csize, int xt, int ttag);
 void		CalcPerimeters(VOX* pv, int* cper, int NRc);
 void		CalcLengths(VOX* pv,NOD* pn,double* clength,double* ecc,double* cangle,int NRc,int* csize,int* csumx, int* csumy);
@@ -30,16 +30,13 @@ int		check_contact(VOX* pv);
 
 
 // CPM_dH.c
-double 		calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, int stag, int incr, double* dens, bool matrix,int NRc,int* celltypes);
+double 		calcdH(VOX* pv, NOD* pn, int* csize, int xt, int xs, int pick, int ttag, int stag, int incr,bool matrix,int NRc,int* celltypes);
 double 		calcdHcontact(VOX* pv, int xt, int ttag, int stag,int* celltypes);
 double 		contactenergy(int tag1, int tag2,int* celltypes);
 double 		calcdHvol(int* csize, int ttag, int stag,int* celltypes);
-double          calcdHadh(NOD* pn, int xt, int xs, int pick, int ttag, int stag,double *dens,int* csize,VOX* pv);
+double          calcdHadh(NOD* pn, int xt, int xs, int pick, int ttag, int stag,int* csize,VOX* pv);
 
 // cellforces.c
-//void 		cell_forces_ham(VOX* pv, NOD* pn, int NRc, int* csize,int incr, double* dens,int* celltypes);
-//void 		LMHelper(const double *x,double *res,void *data);
-//std::vector<double> 		minimise(ForceComponent &model,std::vector<double> &obs,std::vector<double> &lowerbounds,std::vector<double> &upperbounds, double* ic);
 BOOL 		CheckCellNodeConnection(VOX* pv, NOD* pn, int n1, int n2, int c);
 void 		cell_forces(VOX* pv, NOD* pn, int* csize, int NRc,int* csumx,int* csumy,double* FA, NOD* pnold);
 
@@ -71,11 +68,6 @@ void 		kval_to_nodes(double* Km, double* kval,NOD* pn);
 // FE_solver.c
 void 		calc_Kdotx(int* kcol, double* kval, double* diag, double* x, double* b, int nrrdof);
 void 		solvePCG(int* kcol, double* kval, double* u, double* f, int nrrdof);
-
-// PDE_solver.c
-void 		upwind_dens(double *dens, NOD* pn, NOD* pnold,VOX* pv);
-//void 		forwardeuler_FA(double* FA, NOD* pn,NOD* pnold, VOX* pv, double* dens,int NRc,double* tensionold,double* sumFA,double** klocal);
-void 		calctension(NOD* pn,double** klocal);
 
 // write.c
 //RENE

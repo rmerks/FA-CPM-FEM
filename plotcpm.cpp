@@ -92,7 +92,7 @@ int celltype = celltypes[pv[v].ctag-1];
             if (pv[v].ctag<=0) {
                    colour=-1; //-1
             } else {
-	      if(par.CELLCOLOUR){colour =Qt::green;if(celltype==2){colour =15;}} // make cells grey (yes...Qt::green is grey?)
+	      if(par.CELLCOLOUR){colour =Qt::green;colour=210;if(celltype==2){colour =15; }} // make cells grey 
 		else{colour=-1;}
             }
             
@@ -189,8 +189,7 @@ void PlotCPM::PlotHueStrainField(bool STRAINFIELD) {
     BeginScene();
 QColor c;
 	    double max_strain;
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR = MaxStrainMagnitude();}
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR=0.01;}
+
 	    if(par.COLORBAR)
 	    {
 		max_strain=par.MAXCOLORBARSTRAIN;
@@ -244,8 +243,7 @@ QColor c;
 
 
 	    double max_chem;
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR = MaxStrainMagnitude();}
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR=0.01;}
+
 	    if(par.COLORBAR)
 	    {
 		max_chem=par.MAXCOLORBARDENS;
@@ -303,8 +301,7 @@ void PlotCPM::PlotHueStressField(bool STRESSFIELD) {
     BeginScene();
 QColor c;
 	    double max_stress;
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR = MaxStrainMagnitude();}
-	    //if(par.MAXCOLORBAR<=0.01){par.MAXCOLORBAR=0.01;}
+
 	    if(par.COLORBAR)
 	    {
 		max_stress=par.MAXCOLORBARSTRESS;
@@ -347,6 +344,71 @@ c=Qt::white;
             		picture->drawPoint((par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
 		}
 	    }
+
+	    
+        }
+    }
+EndScene();
+}
+
+
+
+void PlotCPM::PlotHueStressField_CTB(bool STRESSFIELD) {
+
+
+    BeginScene();
+QColor c;
+	    double max_stress;
+
+	    if(par.COLORBAR)
+	    {
+		max_stress=par.MAXCOLORBARSTRESS;
+		if(par.MAXCOLORBARSTRESS==0){max_stress=MaxStressMagnitude();}
+
+	    }
+	    else{max_stress=MaxStressMagnitude();}
+
+//if(max_stress==0){ max_stress=0.0001;}
+
+
+
+c=Qt::white;
+
+    // Plot vector field
+
+    // Draw strain magnitude
+
+    for (int vx=0;vx<par.NVX;vx++) {
+        for (int vy=0;vy<par.NVY;vy++) {
+int hue;
+	if(par.STRESSFIELD)
+	{	
+
+
+            //int hue=240-240*abs(stress[vx][vy][2])/max_stress;
+		hue=round(255*abs(stress[vx][vy][2])/max_stress); 
+	    if(stress[vx][vy][2]>max_stress){hue=255;} //0
+            if (hue<0) {
+                cerr << "Panic. Hue is: " << hue << endl;
+                cerr << "stress at ( " << vx << ", " << vy << ") is " << stress[vx][vy][2] << ", max stress: " << max_stress << endl;
+                exit(0);
+            }
+            c.setHsv(hue,255,255);
+	}
+        picture->setPen( c );
+
+
+
+
+	    for(int pixx = 0; pixx < (par.PIXPERVOX); pixx++){ 	
+		for(int pixy = 0; pixy < (par.PIXPERVOX); pixy++){ 	
+            		//PointECM(255-hue,(par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
+PointECM(hue,(par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
+		}
+	    }
+	
+
+
 
 	    
         }
@@ -590,25 +652,7 @@ void PlotCPM::CalculateForceField(NOD *pn) const{
    }
 }
 
-void PlotCPM::CalculateTensionField(NOD *pn) const{
-    for (int nx=1;nx<NNX-1;nx++) {
-        for (int ny=1;ny<NNY-1;ny++) {
-            int n=nx + ny*NNX;
 
-                // calculate force vector
-
-                tension[nx][ny][0] = pn[n].tx;
-                tension[nx][ny][1] = pn[n].ty;
-
-            // magnitude
-
-            double tx=tension[nx][ny][0], ty=tension[nx][ny][1];
-            tension[nx][ny][2]=sqrt(tx*tx + ty*ty);
-
-
-	}
-   }
-}
 
 double PlotCPM::MaxForceMagnitude(void) const {
     double max=0.;
@@ -677,7 +721,7 @@ void PlotCPM::CalculateStrainField(NOD *pn) const{
    }
 }
 
-void PlotCPM::PlotNodalForces(NOD *pn){
+void PlotCPM::PlotNodalForces(NOD *pn,VOX* pv){
 
 
 BeginScene();
@@ -686,17 +730,19 @@ BeginScene();
     for (int nx=1;nx<NNX-1;nx++) { 
         for (int ny=1;ny<NNY-1;ny++) {
 
-
+		int n=nx+ny*NNX;
 
             double linelength = sqrt(2)*(par.PIXPERVOX)/MaxForceMagnitude(); 
 
+	    double fx=force[nx][ny][0];
+	    double fy=force[nx][ny][1];
 
 
 	    if(par.MAXFORCE){linelength = sqrt(2)*(par.PIXPERVOX)/par.MAXFORCE;}
             double x1= (par.PIXPERVOX)*nx;
             double y1= (par.PIXPERVOX)*ny;
-            double x2= ((par.PIXPERVOX)*nx+linelength*force[nx][ny][0]);
-            double y2= ((par.PIXPERVOX)*ny+linelength*force[nx][ny][1]);
+            double x2= ((par.PIXPERVOX)*nx+linelength*fx);
+            double y2= ((par.PIXPERVOX)*ny+linelength*fy);
 
 
 
@@ -710,7 +756,6 @@ BeginScene();
             if (y2<(par.PIXPERVOX)) y2=(par.PIXPERVOX);
             if (y2>(par.PIXPERVOX)*par.NVY-1) y2=(par.PIXPERVOX)*par.NVY-1;
 
-            int n=nx + ny*NNX;
 
 if(!(x1==x2) || !(y1==y2)){
 
@@ -866,28 +911,18 @@ double minfa = par.BASEFA;
 
 	    QPoint Qp=QPoint(x1,y1);
 
-
-
-	if((nx%par.PATTERNC==1) && (ny%par.PATTERNC==1) && par.PATTERN)
-	{
-	    double radius2 = 0.2*par.PIXPERVOX;
-	    picture->setBrush(Qt::red);
-	    this->picture->drawEllipse(Qp, (int)radius2,(int)radius2);
-
-	}
-
-
+		QColor c;
 	    if(par.FACOLOUR)
 	    {
-            int hue=240-240*(FA[n]-5000)/(maxfa-5000);
-	    if(FA[n]<=5000){hue=240;}
-		QColor c;
+            int hue=240-240*(FA[n]-par.BASEFA)/(maxfa-par.BASEFA);
+	    if(FA[n]<=par.BASEFA){hue=240;}
+
             c.setHsv(hue,255,255);
 	
             picture->setPen( c );
 	    picture->setBrush(c);
 	    }
-	    if(!par.FACOLOUR){picture->setBrush(Qt::black);}
+	    if(!par.FACOLOUR){picture->setBrush(Qt::black); c.setRgb(255,128,0); picture->setBrush(c);            picture->setPen( c );}
 	    this->picture->drawEllipse(Qp, radius,radius);
 /*	if(n==NV/2+par.NVX/2 | n==NV/2+par.NVX/2-11*par.NVX |n==NV/2+par.NVX/2-5*par.NVX | n==NV/2+par.NVX/2+8*par.NVX| n==NV/2+par.NVX/2-8*par.NVX){
 
@@ -907,6 +942,107 @@ double minfa = par.BASEFA;
 //radius=1;	    this->picture->drawEllipse(Qp, radius,radius);
 //cout << "stress[nx][ny][2] " << stress[nx][ny][2] << endl;
 //}
+
+
+
+}
+}
+
+
+    EndScene();
+
+
+}
+
+void PlotCPM::PlotNodalFA2(VOX *pv,double* FA){
+
+
+BeginScene();
+
+    // draw FA circles
+    for (int nx=0;nx<par.NVX-1;nx++) { 
+        for (int ny=0;ny<par.NVY-1;ny++) {
+
+	int radius=0;
+
+double maxfa = 50*par.VOXSIZE*par.VOXSIZE/8e-15;
+if(par.MAXFA){maxfa=par.MAXFA;}
+
+double minfa = par.BASEFA;
+
+double fasize = 0;
+double count=0;
+int n = nx+ny*par.NVX;
+
+
+
+
+		int nbs[4],nbtag;
+if(nx%2==0 && ny%2==0) //coarser plot of FAs
+{
+		fasize+=FA[n];
+		count=count+1;
+
+		nbs[0]=n+(par.NVX);
+		nbs[1]=n-1;                    nbs[2]=n+1;
+		nbs[3]=n-(par.NVX); 
+
+
+		for(int m=0;m<4;m++) 
+		{
+			nbtag = pv[nbs[m]].ctag; 
+			if(nbtag==pv[n].ctag)
+			{
+
+				fasize+=FA[nbs[m]];
+				count++;
+			}
+
+		}
+		fasize=fasize/count;
+
+
+}
+
+            if(fasize>=minfa){radius = 1*(fasize-minfa)*par.PIXPERVOX/(maxfa-minfa);
+		radius=radius+0.01*par.PIXPERVOX;}
+		if(fasize>=maxfa){radius = 1*par.PIXPERVOX;
+			radius=radius+0.01*par.PIXPERVOX;}
+
+            int x1= (par.PIXPERVOX)*nx+par.PIXPERVOX/2;
+            int y1= (par.PIXPERVOX)*ny+par.PIXPERVOX/2;
+
+	    QPoint Qp=QPoint(x1,y1);
+
+
+	    if(par.FACOLOUR)
+	    {
+            int hue=240-240*(FA[n]-par.BASEFA)/(maxfa-par.BASEFA);
+	    if(FA[n]<=par.BASEFA){hue=240;}
+		QColor c;
+            c.setHsv(hue,255,255);
+	
+            picture->setPen( c );
+	    picture->setBrush(c);
+	    }
+	    if(!par.FACOLOUR){		
+		QColor c;
+            c.setRgb(255,128,0); //orange
+           
+            c.setRgb(255,255,255); //white
+
+            if(!par.STRESSFIELD){c.setRgb(255,128,0);} //orange
+	
+            picture->setPen( c );
+	    picture->setBrush(c);
+		}
+
+radius=radius*1.75;
+
+	    this->picture->drawEllipse(Qp, radius,radius);
+
+	    this->picture->drawEllipse(Qp, radius,radius);
+		
 
 
 
@@ -1277,8 +1413,65 @@ EndScene();
 
 }
 
-void PlotCPM::DrawColorBarLabel(int yval, double val){
+void PlotCPM::StressColorBar_CTB(void){
 BeginScene();
+QColor c;
+
+double strainhue=0;
+double max_stress;
+
+	    if(par.COLORBAR)
+	    {
+		max_stress=par.MAXCOLORBARSTRESS;
+		if(par.MAXCOLORBARSTRESS==0){max_stress=MaxStressMagnitude();}
+
+	    }
+	    else{max_stress=MaxStressMagnitude();}
+
+if(max_stress==0){ max_stress=0.0001;}
+
+double cstep = max_stress/(par.NVY*par.PIXPERVOX);
+
+cout << "max_stress" << max_stress << endl;
+
+for(int i = 0; i < par.NVY*par.PIXPERVOX; i++)
+{
+	    strainhue = i*cstep;
+            int hue=240-240*strainhue/max_stress;
+            if (hue<0) {
+                cerr << "Panic. Hue is: " << hue << endl;
+                exit(0);
+            }
+            c.setHsv(hue,255,255);
+	
+        picture->setPen( c );
+	
+
+		hue=round(255*strainhue/max_stress); 
+
+
+	double x = par.NVX*par.PIXPERVOX + par.WIDTHCOLORBAR;
+	double y = par.NVY*par.PIXPERVOX-i;
+	for(int pixx = 0; pixx < par.WIDTHCOLORBAR; pixx++)
+	{
+        	//PointECM(255-hue,x+pixx,y);
+		PointECM(hue,x+pixx,y);
+	}
+    if(!(i%par.NVY)&&(i>0))
+    {
+        double val = strainhue;
+        if(val>max_stress){val=par.MAXCOLORBARSTRESS;}
+        DrawColorBarLabel(i,val);
+    }
+
+}
+EndScene();
+
+}
+
+
+void PlotCPM::DrawColorBarLabel(int yval, double val){
+//BeginScene();
 string valstr;
 ostringstream convert;
 convert.precision(4);
@@ -1293,7 +1486,7 @@ font->setPixelSize(100*par.NVX/300);
 font->setBold(true);
 picture->setFont(*font);
 this->picture->drawText(QPointF(par.NVX*par.PIXPERVOX+2*par.WIDTHCOLORBAR,par.NVY*par.PIXPERVOX-yval), s);
-EndScene();
+//EndScene();
 }
 
 
@@ -1305,76 +1498,80 @@ void PlotCPM::DeleteStrainForce() {
 }
 
 void PlotCPM::PlotStressTensor(NOD *pn, VOX* pv){
-    
-    
-    BeginScene();
-    
-    // draw FA circles
-    for (int nx=0;nx<par.NVX-1;nx++) {
+
+
+BeginScene();
+
+    for (int nx=0;nx<par.NVX-1;nx++) { 
         for (int ny=0;ny<par.NVY-1;ny++) {
-            
-            int n = nx+ny*par.NVX;
-            
+
+		int n = nx+ny*par.NVX;
+
             int x1= (par.PIXPERVOX)*nx+par.PIXPERVOX/2;
             int y1= (par.PIXPERVOX)*ny+par.PIXPERVOX/2;
-            
-            
-            double estrains[3],L1,L2,v1[2],v2[2];
-            double estress[3];
-            
-            QPoint Qp=QPoint(x1,y1);
-            get_estrains(pn,n,estrains);
-            get_estress(n, estrains,estress);
-            
-            
-            L1=L2=.0; get_princs(estress,&L1,&L2,v1,v2,0);
-            
-            
-            double radius1=5+L1/500;
-            double radius2=5+L2/500;
-            
-            if(radius1<0){radius1=0;}
-            if(radius2<0){radius2=0;}
-            
-            double angle =0;
-            
-            
-            if(L1>=L2){angle = -atan2(v1[1],v1[0])*180/3.14;}
-            if(L2>L1){angle = -atan2(v2[1],v2[0])*180/3.14;}
-            
-            
-            
-            
-            
-            picture->setBrush(Qt::black);
-            picture->save();
-            picture->translate(Qp);
-            picture->rotate(-angle);
-            picture->drawEllipse(QPoint(0, 0), (int)radius1,(int)radius2);
-            picture->restore();
-            
-            if(pv[n].ctag)
-            {
-                double etractionstress[2];
-                get_etractionstress(pn,n, etractionstress);
-                double strx=etractionstress[0]; double stry=etractionstress[1];
-                double tractionstress=sqrt(strx*strx + stry*stry);
-                double angle2 = -atan2(stry,strx)*180/3.14;
-                picture->setBrush(Qt::red);
-                picture->save();
-                picture->translate(Qp);
-                picture->rotate(-angle2);
-                picture->drawEllipse(QPoint(0, 0), (int)(2+tractionstress/500),2);
-                picture->restore();
-                
-            }
-        }
-    }
-    
-    
+
+
+    	double estrains[3],L1,L2,v1[2],v2[2];
+	double estress[3]; 
+
+	    QPoint Qp=QPoint(x1,y1);
+      		get_estrains(pn,n,estrains);
+		get_estress(n, estrains,estress);
+
+
+        	L1=L2=.0; get_princs(estress,&L1,&L2,v1,v2,0);
+
+
+		double radius1=5+L1/500;
+		double radius2=5+L2/500;
+
+		if(radius1<0){radius1=0;}
+		if(radius2<0){radius2=0;}
+
+		double angle =0;
+		
+
+		if(L1>=L2){angle = -atan2(v1[1],v1[0])*180/3.14;}
+		if(L2>L1){angle = -atan2(v2[1],v2[0])*180/3.14;}
+
+		
+
+
+
+	    picture->setBrush(Qt::black);
+picture->save();
+picture->translate(Qp);
+picture->rotate(-angle);
+picture->drawEllipse(QPoint(0, 0), radius1,radius2);
+picture->restore();
+
+if(pv[n].ctag)
+{
+double etractionstress[2];
+get_etractionstress(pn,n, etractionstress);
+double strx=etractionstress[0]; double stry=etractionstress[1];
+double tractionstress=sqrt(strx*strx + stry*stry);
+double angle2 = -atan2(stry,strx)*180/3.14;
+picture->setBrush(Qt::red);
+picture->save();
+picture->translate(Qp);
+picture->rotate(-angle2);
+picture->drawEllipse(QPoint(0, 0), 2+tractionstress/500,2);
+picture->restore();
+
+}
+
+
+
+
+
+}
+}
+
+
     EndScene();
-    
-    
+
+
 }
 
 
@@ -1383,4 +1580,4 @@ void PlotCPM::PlotStressTensor(NOD *pn, VOX* pv){
 
 
 
-
+ 

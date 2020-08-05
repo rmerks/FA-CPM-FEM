@@ -20,10 +20,10 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301 USA
 
 */
-//#include <qapplication.h>
-#include <QWidget>
-#include <QLabel>
-#include <QPainter>
+#include <qapplication.h>
+#include <qwidget.h>
+#include <qlabel.h>
+#include <qpainter.h>
 //#include <q3picture.h>
 #include <QPalette>
 //Added by qt3to4:
@@ -34,9 +34,9 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <malloc.h>
 #endif
 #include <iostream>
-#include <QTimer>
-#include <QPixmap>
-#include <QImage>
+#include <qtimer.h>
+#include <qpixmap.h>
+#include <qimage.h>
 //#include <q3strlist.h>
 #include <QResizeEvent>
 #include <iostream>
@@ -74,9 +74,11 @@ QtGraphics::QtGraphics(int xfield, int yfield, const char *movie_file)
   
   // Allocate colors
   pens = new QPen[256];
+  pensECM = new QPen[256];
 	
   
   ReadColorTable(pens);
+  ReadColorTableECM(pensECM);
  
 	// Set background color of widget (i.e. the color outside the Pixmap that
 	// will be shown after resizing the window)
@@ -111,6 +113,14 @@ void QtGraphics::Point(int colour, int i, int j) {
     }
 }
 
+void QtGraphics::PointECM(int colour, int i, int j) {
+
+    if (colour >=0) { // colour < 0 = transparent
+        picture->setPen( pensECM[colour] );
+        picture->drawPoint( i, j);
+    }
+}
+
 void QtGraphics::BeginScene(void) {
 
   picture->begin(pixmap);
@@ -133,6 +143,38 @@ void QtGraphics::ReadColorTable(QPen *pens)
   
   char name[50];
   sprintf(name,"default.ctb");
+   
+  FILE *fpc;
+  if ((fpc = fopen(name,"r")) == NULL) {
+     
+    char *message=new char[2000];
+    if (message==0) {
+      throw "Memory panic in QtGraphics::ReadColorTable\n";
+    }
+     
+    sprintf(message,"QtGraphics::ReadColorTable: Colormap '%s' not found.",name);
+     
+    throw(message);
+     
+  }
+   
+  int r,g,b;
+  int i;
+  while (fscanf(fpc,"%d",&i) != EOF) {
+    fscanf(fpc,"%d %d %d\n",&r,&g,&b);
+    QPen p(QColor(r,g,b));
+    pens[i]=p;
+  }
+   
+  fclose(fpc);
+
+}
+
+void QtGraphics::ReadColorTableECM(QPen *pens)
+{
+  
+  char name[50];
+  sprintf(name,"ECMfield.ctb");
    
   FILE *fpc;
   if ((fpc = fopen(name,"r")) == NULL) {
@@ -189,7 +231,7 @@ void QtGraphics::TimeStepWrap(void) {
   t++;
   // check number of timesteps
 
-  if (t==par.MCS) {
+  if (t==par.NVX*par.NVY) {
     emit SimulationDone();
   }
   //picture->end();
@@ -235,10 +277,10 @@ void QtGraphics::Write(char *fname, int quality) {
 
   
   //std::cerr << "Extension is: " << extension << "\n";
-  if (pixmap->save(imname,extension.toLatin1(),quality)) {
-      std::cerr << "Image " << imname.toStdString() << " was succesfully written.\n";
+  if (pixmap->save(imname,extension.toAscii(),quality)) {
+      std::cerr << "Image " << (char *)imname.data() << " was succesfully written.\n"; 
   } else {
-      std::cerr << "Image " << imname.toStdString() << " could not be written.\n";
+      std::cerr << "Image " << (char *)imname.data() << " could not be written.\n"; 
     QList<QByteArray> fmt = QImageWriter::supportedImageFormats();
     std::cerr << "Please choose one of the following formats: ";
    // for (const char* f = fmt.first(); f; f = fmt.next()) {

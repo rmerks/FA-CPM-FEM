@@ -3,11 +3,10 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = CPMFEM
+TARGET = 
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG -= app_bundle
-QT += widgets
 
 # Input
 HEADERS += def.h \
@@ -27,7 +26,6 @@ SOURCES += cellforces.cpp \
            FE_local.cpp \
            FE_nodes2dofs.cpp \
            FE_solver.cpp \
-           PDE_solver.cpp \
            init.cpp \
            mt.cpp \
            mylib.cpp \

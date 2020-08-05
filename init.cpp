@@ -39,7 +39,6 @@ NOD* init_nodes(void)
         n = nx + ny*NNX;
 
         //pn[n].x = nx * (par.VOXSIZE); pn[n].y = ny * (par.VOXSIZE);
-        pn[n].tx = .0; pn[n].ty = .0;
         pn[n].fx = .0; pn[n].fy = .0;
         pn[n].ux = .0; pn[n].uy = .0;
         pn[n].restrictx = FALSE; pn[n].restricty = FALSE;
@@ -117,7 +116,6 @@ double FORCE = ((par.LOAD)*(par.VOXSIZE));
 
     if(par.GLOBALSTRAIN){
 
-if(par.CYCLIC){FORCE = FORCE*abs(sin(2*3.14*incr/par.PERIOD));}
 
     for(ny=0; ny<NNY; ny++)
     for(nx=0; nx<NNX; nx++)

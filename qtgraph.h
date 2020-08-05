@@ -54,6 +54,7 @@ class QtGraphics : public QWidget, public Graphics {
     XFlush(display);
     } */
   virtual void Point( int colour, int i, int j);
+  virtual void PointECM( int colour, int i, int j);
   virtual void Line ( int x1, int y1,int x2,int y2,int colour );
   /*void Field (const int **r, int mag=1);
     void PlotNumber(int number, int x, int y);*/
@@ -90,6 +91,7 @@ protected:
   QLabel *label;
   QPicture pic;
   QPen *pens;
+  QPen *pensECM;
   QTimer *timer;
   QPixmap *pixmap;
   QLabel *image;
@@ -105,6 +107,7 @@ protected:
 
   // private methods
   void ReadColorTable(QPen *pens);
+  void ReadColorTableECM(QPen *pensECM);
   QTimer *t;
   
   
