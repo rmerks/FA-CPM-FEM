@@ -45,14 +45,14 @@ static const std::string _module_id("$Id$");
 
 Parameter::Parameter() {
   SEED = 1;
-  NVX = 500;
+  NVX = 200;
   NVY = 200;
   VOXSIZE = 0.0000025;
   NRINC = 2501;
   MAXNRITER = 1000;
   RELAXTIME = 0;
   ACCURACY = 0.000001;
-  YOUNGS = 6000;
+  YOUNGS = 50000;
   YOUNGSNOISE = 0;
   POISSON = 0.45;
   THICKNESS = 1e-6;
@@ -86,10 +86,11 @@ Parameter::Parameter() {
   PDEdt = 0.01;
   PDEREPEAT = 1000;
   FORCESCALE = 0.01;
-  CAPACITYFA = 10000000;
+  CAPACITYFA = 100000;
   MAXFAPP = 390;
   BASEFA = 50;
   GROWTHFA = 0.01;
+  DECAYFA = 1;
   LOGISTICPAR = 1;
   CATCHTENSION = 4.02;
   SLIPTENSION = 7.78;
@@ -120,7 +121,7 @@ Parameter::Parameter() {
   CELLDIS = 20;
   BOUNDARYDIS = 25;
   FORBIDDENZONE = 0;
-  DUROTAXIS = true;
+  DUROTAXIS = false;
   GRADIENT = 50;
   NRcf = 0;
   COLORBAR = true;
@@ -172,14 +173,14 @@ void Parameter::Read(const char *filename) {
 
 
   SEED = igetpar(fp, "SEED", 1, true);
-  NVX = igetpar(fp, "NVX", 500, true);
+  NVX = igetpar(fp, "NVX", 200, true);
   NVY = igetpar(fp, "NVY", 200, true);
   VOXSIZE = fgetpar(fp, "VOXSIZE", 0.0000025, true);
   NRINC = igetpar(fp, "NRINC", 2501, true);
   MAXNRITER = igetpar(fp, "MAXNRITER", 1000, true);
   RELAXTIME = igetpar(fp, "RELAXTIME", 0, true);
   ACCURACY = fgetpar(fp, "ACCURACY", 0.000001, true);
-  YOUNGS = fgetpar(fp, "YOUNGS", 6000, true);
+  YOUNGS = fgetpar(fp, "YOUNGS", 50000, true);
   YOUNGSNOISE = fgetpar(fp, "YOUNGSNOISE", 0, true);
   POISSON = fgetpar(fp, "POISSON", 0.45, true);
   THICKNESS = fgetpar(fp, "THICKNESS", 1e-6, true);
@@ -213,10 +214,11 @@ void Parameter::Read(const char *filename) {
   PDEdt = fgetpar(fp, "PDEdt", 0.01, true);
   PDEREPEAT = fgetpar(fp, "PDEREPEAT", 1000, true);
   FORCESCALE = fgetpar(fp, "FORCESCALE", 0.01, true);
-  CAPACITYFA = fgetpar(fp, "CAPACITYFA", 10000000, true);
+  CAPACITYFA = fgetpar(fp, "CAPACITYFA", 100000, true);
   MAXFAPP = fgetpar(fp, "MAXFAPP", 390, true);
   BASEFA = fgetpar(fp, "BASEFA", 50, true);
   GROWTHFA = fgetpar(fp, "GROWTHFA", 0.01, true);
+  DECAYFA = fgetpar(fp, "DECAYFA", 1, true);
   LOGISTICPAR = fgetpar(fp, "LOGISTICPAR", 1, true);
   CATCHTENSION = fgetpar(fp, "CATCHTENSION", 4.02, true);
   SLIPTENSION = fgetpar(fp, "SLIPTENSION", 7.78, true);
@@ -247,7 +249,7 @@ void Parameter::Read(const char *filename) {
   CELLDIS = igetpar(fp, "CELLDIS", 20, true);
   BOUNDARYDIS = igetpar(fp, "BOUNDARYDIS", 25, true);
   FORBIDDENZONE = igetpar(fp, "FORBIDDENZONE", 0, true);
-  DUROTAXIS = bgetpar(fp, "DUROTAXIS", true, true);
+  DUROTAXIS = bgetpar(fp, "DUROTAXIS", false, true);
   GRADIENT = fgetpar(fp, "GRADIENT", 50, true);
   NRcf = igetpar(fp, "NRcf", 0, true);
   COLORBAR = bgetpar(fp, "COLORBAR", true, true);
@@ -330,6 +332,7 @@ void Parameter::Write(ostream &os) const {
   os << " MAXFAPP = " << MAXFAPP << endl;
   os << " BASEFA = " << BASEFA << endl;
   os << " GROWTHFA = " << GROWTHFA << endl;
+  os << " DECAYFA = " << DECAYFA << endl;
   os << " LOGISTICPAR = " << LOGISTICPAR << endl;
   os << " CATCHTENSION = " << CATCHTENSION << endl;
   os << " SLIPTENSION = " << SLIPTENSION << endl;
@@ -707,6 +710,13 @@ xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
   xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "GROWTHFA" );
   ostringstream text;
     text << GROWTHFA;
+xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
+}
+{
+  xmlNode *xmlpar = xmlNewChild(xmlparameter, NULL, BAD_CAST "par", NULL);
+  xmlNewProp(xmlpar, BAD_CAST "name", BAD_CAST "DECAYFA" );
+  ostringstream text;
+    text << DECAYFA;
 xmlNewProp(xmlpar, BAD_CAST "val", BAD_CAST text.str().c_str());
 }
 {
@@ -1261,6 +1271,10 @@ if (!strcmp(namec, "BASEFA")) {
 if (!strcmp(namec, "GROWTHFA")) {
   GROWTHFA = standardlocale.toDouble(valc, &ok);
   if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'GROWTHFA' from XML file.",valc); }
+}
+if (!strcmp(namec, "DECAYFA")) {
+  DECAYFA = standardlocale.toDouble(valc, &ok);
+  if (!ok) { MyWarning::error("Read error: cannot convert string \"%s\" to double while reading parameter 'DECAYFA' from XML file.",valc); }
 }
 if (!strcmp(namec, "LOGISTICPAR")) {
   LOGISTICPAR = standardlocale.toDouble(valc, &ok);

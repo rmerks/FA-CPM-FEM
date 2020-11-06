@@ -3,10 +3,11 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = CPMFEM
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG -= app_bundle
+QT += widgets
 
 # Input
 HEADERS += def.h \

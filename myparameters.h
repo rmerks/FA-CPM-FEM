@@ -90,6 +90,7 @@ using namespace std;
   double MAXFAPP;
   double BASEFA;
   double GROWTHFA;
+  double DECAYFA;
   double LOGISTICPAR;
   double CATCHTENSION;
   double SLIPTENSION;

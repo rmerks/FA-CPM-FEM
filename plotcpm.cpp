@@ -1522,8 +1522,8 @@ BeginScene();
         	L1=L2=.0; get_princs(estress,&L1,&L2,v1,v2,0);
 
 
-		double radius1=5+L1/500;
-		double radius2=5+L2/500;
+		qreal radius1=5+L1/500;
+		qreal radius2=5+L2/500;
 
 		if(radius1<0){radius1=0;}
 		if(radius2<0){radius2=0;}
@@ -1542,21 +1542,21 @@ BeginScene();
 picture->save();
 picture->translate(Qp);
 picture->rotate(-angle);
-picture->drawEllipse(QPoint(0, 0), radius1,radius2);
+picture->drawEllipse(QPointF(0., 0.), radius1,radius2);
 picture->restore();
 
 if(pv[n].ctag)
 {
-double etractionstress[2];
+qreal etractionstress[2];
 get_etractionstress(pn,n, etractionstress);
-double strx=etractionstress[0]; double stry=etractionstress[1];
-double tractionstress=sqrt(strx*strx + stry*stry);
-double angle2 = -atan2(stry,strx)*180/3.14;
+qreal strx=etractionstress[0]; qreal stry=etractionstress[1];
+qreal tractionstress=sqrt(strx*strx + stry*stry);
+qreal angle2 = -atan2(stry,strx)*180/3.14;
 picture->setBrush(Qt::red);
 picture->save();
 picture->translate(Qp);
 picture->rotate(-angle2);
-picture->drawEllipse(QPoint(0, 0), 2+tractionstress/500,2);
+picture->drawEllipse(QPointF(0., 0.), 2.+tractionstress/500.,2.);
 picture->restore();
 
 }

@@ -20,8 +20,8 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 02110-1301 USA
 
 */
-#include <qapplication.h>
-#include <qwidget.h>
+/* #include <qapplication.h> */
+#include <QtWidgets>
 #include <qlabel.h>
 #include <qpainter.h>
 //#include <q3picture.h>
@@ -39,7 +39,6 @@ Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 #include <qimage.h>
 //#include <q3strlist.h>
 #include <QResizeEvent>
-#include <iostream>
 #include "qtgraph.h"
 #include "myparameters.h"
 
@@ -273,21 +272,22 @@ void QtGraphics::Write(char *fname, int quality) {
   QString imname(fname);
   
   // Get file extension to infer desired image format
-  QString extension = imname.section( '.', -1).toUpper();
-
+  QString extension_str = imname.section( '.', -1).toUpper();
+  const char *extension = extension_str.toLocal8Bit().constData();
+ 
   
   //std::cerr << "Extension is: " << extension << "\n";
-  if (pixmap->save(imname,extension.toAscii(),quality)) {
-      std::cerr << "Image " << (char *)imname.data() << " was succesfully written.\n"; 
+  if (pixmap->save(imname,extension,quality)) {
+      std::cerr << "Image " << (char *)imname.toLocal8Bit().constData() << " was succesfully written.\n";
   } else {
-      std::cerr << "Image " << (char *)imname.data() << " could not be written.\n"; 
+      std::cerr << "Image " << (char *)imname.toLocal8Bit().constData() << " could not be written.\n";
     QList<QByteArray> fmt = QImageWriter::supportedImageFormats();
     std::cerr << "Please choose one of the following formats: ";
    // for (const char* f = fmt.first(); f; f = fmt.next()) {
-    foreach (QByteArray f, fmt) {
-
-        std::cerr << f.data() << " ";
+    for (QList< QByteArray >::ConstIterator f=fmt.begin(); f!=fmt.end(); f++) {
+          cerr << f->constData() << " ";
     }
+
     std::cerr << "\n";
   } 
 
