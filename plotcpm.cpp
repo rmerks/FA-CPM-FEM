@@ -12,6 +12,7 @@ PlotCPM::PlotCPM(int xfield, int yfield, char *moviefile) :
 {
 
     int vecsize=3;
+    cerr <<"PlotCPM constructor\n ";
     // allocate field for strain magnitude visualization
     strain = new double**[par.NVX];
     strain[0] = new double*[par.NVX*par.NVY];
@@ -80,16 +81,23 @@ PlotCPM::PlotCPM(int xfield, int yfield, char *moviefile) :
 }
 
 void PlotCPM::Plot(VOX *pv, int* celltypes) {
+    cerr << "Entering PlotCPM::Plot()\n";
     BeginScene();
     for (int vx = 0; vx < par.NVX-1; vx++ ) {
         for (int vy = 0; vy < par.NVY-1; vy++ ) {
             int v=vx + vy*par.NVX;
 
-int celltype = celltypes[pv[v].ctag-1];
+            int celltype;
+             int sigma=pv[v].ctag;
+             if (sigma<=0) {
+                   celltype=-1;
+             } else {
+                celltype = celltypes[sigma-1];
+             }
 
 	int colour;
 
-            if (pv[v].ctag<=0) {
+            if (sigma<=0) {
                    colour=-1; //-1
             } else {
 	      if(par.CELLCOLOUR){colour =Qt::green;colour=210;if(celltype==2){colour =15; }} // make cells grey 
@@ -372,7 +380,7 @@ QColor c;
 
 
 
-c=Qt::white;
+    c=Qt::white;
 
     // Plot vector field
 
@@ -380,7 +388,7 @@ c=Qt::white;
 
     for (int vx=0;vx<par.NVX;vx++) {
         for (int vy=0;vy<par.NVY;vy++) {
-int hue;
+    int hue=0;
 	if(par.STRESSFIELD)
 	{	
 
@@ -394,8 +402,8 @@ int hue;
                 exit(0);
             }
             c.setHsv(hue,255,255);
-	}
-        picture->setPen( c );
+    }
+     picture->setPen( c );
 
 
 
@@ -403,7 +411,11 @@ int hue;
 	    for(int pixx = 0; pixx < (par.PIXPERVOX); pixx++){ 	
 		for(int pixy = 0; pixy < (par.PIXPERVOX); pixy++){ 	
             		//PointECM(255-hue,(par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
-PointECM(hue,(par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
+            if (par.STRESSFIELD) {
+                PointECM(hue,(par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
+            } else {
+               picture->drawPoint((par.PIXPERVOX)*vx+pixx, (par.PIXPERVOX)*vy+pixy);
+            }
 		}
 	    }
 	
@@ -565,6 +577,7 @@ double PlotCPM::MaxStressMagnitude(void) const {
         }
     }
     // }
+    if (max==0) max=1e-10; // small value to prevent division by zero
     return max;
 }
 
@@ -960,8 +973,8 @@ void PlotCPM::PlotNodalFA2(VOX *pv,double* FA){
 BeginScene();
 
     // draw FA circles
-    for (int nx=0;nx<par.NVX-1;nx++) { 
-        for (int ny=0;ny<par.NVY-1;ny++) {
+    for (int nx=1;nx<par.NVX-2;nx++) {
+        for (int ny=1;ny<par.NVY-2;ny++) {
 
 	int radius=0;
 
@@ -988,7 +1001,7 @@ if(nx%2==0 && ny%2==0) //coarser plot of FAs
 		nbs[3]=n-(par.NVX); 
 
 
-		for(int m=0;m<4;m++) 
+        for(int m=0;m<4;m++)
 		{
 			nbtag = pv[nbs[m]].ctag; 
 			if(nbtag==pv[n].ctag)

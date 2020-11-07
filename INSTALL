@@ -1,24 +1,7 @@
 This code is part of: 
 ----------------------
 
-Elisabeth G. Rens and Roeland M.H. Merks. Cell Shape and Durotaxis Follow from Mechanical Cell-Substrate Reciprocity and Focal Adhesion Dynamics: A Multiscale Mathematical Model. PNAS.
-
-Please cite our paper if you use or build upon this code.
-
-Using the code requires basic knowledge of programming, compiling and using the command line. 
-
-INSTALLATION
-------------
-This code is written in C++. The visualization makes use of the Qt5-library. It runs from the commandline and should run on any platform. It has been tested on Linux and MacOSX.
-
-To install, first install a C++ compiler, Qt5 and git. Qt Creator comes with a GNU C++ compiler built in. Download the open source version of Qt. Make sure you check 'command line tools' during installation.
-
-Note that to use the FA-CPM-FEM code, you must make use of the open source version of Qt.  Any derivatives of this simulation code will be open source too.
-
-To start, checkout the source code from GitHub, if you have not already done so:
-
-https://github.com/rmerks/FA-CPM-FEM.git
-
+Elisabeth G. Rens and Roeland M.H. Merks. Cell Shape and Durotaxis Follow from Mechanical Cell-Substrate Reciprocity and Focal Adhesion Dynamics: A Multiscale Mathematical Model. PNAS.x§
 Next, after downloading the FA-CPM-FEM source code, on the commandline move into the FA-CPM-FEM code (i.e., type 'cd FA-CPM-FEM'). 
 
 Then type:

@@ -7,6 +7,7 @@ TARGET = CPMFEM
 DEPENDPATH += .
 INCLUDEPATH += .
 CONFIG -= app_bundle
+CONFIG += debug
 QT += widgets
 
 # Input

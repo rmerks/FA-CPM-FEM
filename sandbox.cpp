@@ -23,6 +23,7 @@ Parameter par;
 
 int main(int argc, char *argv[])
 {
+       cerr << "Hello 1\n";
 	int nrrdof, d;
 	int *dofpos;
 	double *f, *u, *uold;
@@ -167,6 +168,8 @@ int main(int argc, char *argv[])
         exit(1);
     }
 
+   cerr << "Hello 1\n";
+
 	stringstream str;
 	string str1, str2;
 	str1=argv[1];
@@ -176,7 +179,6 @@ int main(int argc, char *argv[])
 	const char * cstr = s.c_str();
 	//First argument is directory
 	par.Read(cstr);
-
 
 
     /// GRAPHICS //
